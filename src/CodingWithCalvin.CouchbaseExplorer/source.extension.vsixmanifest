@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="VS-CouchbaseExplorer" Version="1.0" Language="en-US" Publisher="Coding With Calvin" />
+        <DisplayName>Couchbase Explorer</DisplayName>
+        <Description xml:space="preserve">Couchbase Explorer is an extension to Visual Studio that will assist in communication to a Couchbase Server /Capella during the development process.</Description>
+        <MoreInfo>https://github.com/codingwithcalvin/VS-CouchbaseExplorer</MoreInfo>
+        <License>resources\LICENSE</License>
+        <Icon>resources\logo.png</Icon>
+        <PreviewImage>resources\logo.png</PreviewImage>
+        <Tags>couchbase, capella</Tags>
+        <Preview>true</Preview>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+</PackageManifest>

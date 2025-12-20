@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [
+    "coding",
+    "other",
+    "data"
+  ],
+  "identity": {
+    "internalName": "VS-CouchbaseExplorer"
+  },
+  "overview": "../README.md",
+  "publisher": "CodingWithCalvin",
+  "qna": false,
+  "repo": "https://www.github.com/CodingWithCalvin/VS-CouchbaseExplorer"
+}

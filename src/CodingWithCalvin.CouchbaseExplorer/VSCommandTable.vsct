@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+	
+  <Commands package="guidVsPackage">
+    <Buttons>
+      <Button guid="guidVsPackageCmdSet" id="CouchbaseExplorerWindowCommandId" priority="5000" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_VIEW_ORG_WINDOWS"/>
+        <Icon guid="guidCouchbaseIcon" id="couchbaseIcon" />
+        <Strings>
+          <ButtonText>Couchbase Explorer</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+	    <Bitmap guid="guidCouchbaseIcon" href="..\..\resources\icon.png" usedList="couchbaseIcon"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidVsPackage" value="{ef261503-b2ae-4b90-8c86-0becd83348cc}" />
+
+		<GuidSymbol name="guidVsPackageCmdSet" value="{715bc434-afd2-4104-a6a0-287120f718f5}">
+      <IDSymbol name="CouchbaseExplorerWindowCommandId" value="0x0100" />
+    </GuidSymbol>
+
+		<GuidSymbol name="guidCouchbaseIcon" value="{5adaa369-1a0a-437f-bf63-f609baad46fb}">
+			<IDSymbol name="couchbaseIcon" value="1"/>
+		</GuidSymbol>
+  </Symbols>
+</CommandTable>

@@ -1,0 +1,18 @@
+<Solution>
+  <Configurations>
+    <Platform Name="arm64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="../.github/workflows/publish.yml" />
+    <File Path="../.github/workflows/release_build_and_deploy.yml" />
+    <File Path="../README.md" />
+    <File Path="../resources/extension.manifest.json" />
+  </Folder>
+  <Project Path="CodingWithCalvin.CouchbaseExplorer/CodingWithCalvin.CouchbaseExplorer.csproj">
+    <Platform Solution="*|arm64" Project="arm64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+</Solution>
