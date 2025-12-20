@@ -1,0 +1,154 @@
+<platformUi:DialogWindow x:Class="CodingWithCalvin.CouchbaseExplorer.Dialogs.ConnectionDialog"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+                        xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+                        xmlns:vm="clr-namespace:CodingWithCalvin.CouchbaseExplorer.ViewModels"
+                        Title="{Binding DialogTitle}"
+                        Width="450"
+                        MinWidth="400"
+                        SizeToContent="Height"
+                        ResizeMode="NoResize"
+                        WindowStartupLocation="CenterOwner"
+                        ShowInTaskbar="False">
+
+    <platformUi:DialogWindow.Resources>
+        <vm:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#D32F2F" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Margin" Value="0,2,0,0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="FieldContainerStyle" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+
+        <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="Padding" Value="8" />
+        </Style>
+    </platformUi:DialogWindow.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Connection Name -->
+        <StackPanel Grid.Row="0" Style="{StaticResource FieldContainerStyle}">
+            <TextBlock Text="Connection Name:" Style="{StaticResource LabelStyle}" />
+            <TextBox Text="{Binding ConnectionName, UpdateSourceTrigger=PropertyChanged}"
+                     MaxLength="100" />
+            <TextBlock Text="{Binding ConnectionNameError}"
+                       Style="{StaticResource ErrorTextStyle}"
+                       Visibility="{Binding ConnectionNameError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+        </StackPanel>
+
+        <!-- Connection Type -->
+        <GroupBox Grid.Row="1" Header="Connection Type" Style="{StaticResource GroupBoxStyle}">
+            <StackPanel>
+                <RadioButton Content="Couchbase Server"
+                             IsChecked="{Binding IsCouchbaseServer}"
+                             Margin="0,0,0,8" />
+                <RadioButton Content="Couchbase Capella"
+                             IsChecked="{Binding IsCouchbaseCapella}" />
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Host / Connection String -->
+        <StackPanel Grid.Row="2" Style="{StaticResource FieldContainerStyle}">
+            <TextBlock Text="Host / Connection String:" Style="{StaticResource LabelStyle}" />
+            <TextBox Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="{Binding HostHint}"
+                       FontSize="11"
+                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
+                       Margin="0,2,0,0" />
+            <TextBlock Text="{Binding HostError}"
+                       Style="{StaticResource ErrorTextStyle}"
+                       Visibility="{Binding HostError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+        </StackPanel>
+
+        <!-- Authentication -->
+        <GroupBox Grid.Row="3" Header="Authentication" Style="{StaticResource GroupBoxStyle}">
+            <StackPanel>
+                <StackPanel Style="{StaticResource FieldContainerStyle}">
+                    <TextBlock Text="Username:" Style="{StaticResource LabelStyle}" />
+                    <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding UsernameError}"
+                               Style="{StaticResource ErrorTextStyle}"
+                               Visibility="{Binding UsernameError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                </StackPanel>
+
+                <StackPanel Margin="0">
+                    <TextBlock Text="Password:" Style="{StaticResource LabelStyle}" />
+                    <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_PasswordChanged" />
+                    <TextBlock Text="{Binding PasswordError}"
+                               Style="{StaticResource ErrorTextStyle}"
+                               Visibility="{Binding PasswordError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- SSL/TLS -->
+        <StackPanel Grid.Row="4" Style="{StaticResource FieldContainerStyle}">
+            <CheckBox Content="Use SSL/TLS"
+                      IsChecked="{Binding UseSsl}"
+                      IsEnabled="{Binding IsSslEditable}" />
+            <TextBlock Text="(Required for Couchbase Capella)"
+                       FontSize="11"
+                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
+                       Margin="20,2,0,0"
+                       Visibility="{Binding IsCouchbaseCapella, Converter={StaticResource BoolToVisibilityConverter}}" />
+        </StackPanel>
+
+        <!-- Test Connection -->
+        <GroupBox Grid.Row="5" Style="{StaticResource GroupBoxStyle}" Padding="8">
+            <StackPanel>
+                <Button Content="Test Connection"
+                        Command="{Binding TestConnectionCommand}"
+                        HorizontalAlignment="Left"
+                        Padding="16,6"
+                        Margin="0,0,0,8" />
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="10" Height="10"
+                             Fill="{Binding TestStatusColor}"
+                             Margin="0,0,8,0"
+                             VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding TestStatusMessage}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="6"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,8,0,0">
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}"
+                    IsDefault="True"
+                    Padding="24,6"
+                    Margin="0,0,8,0" />
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    IsCancel="True"
+                    Padding="24,6" />
+        </StackPanel>
+    </Grid>
+</platformUi:DialogWindow>

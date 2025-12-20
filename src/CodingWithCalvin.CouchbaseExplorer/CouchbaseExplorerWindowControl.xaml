@@ -1,19 +1,263 @@
-﻿<UserControl x:Class="CodingWithCalvin.CouchbaseExplorer.CouchbaseExplorerWindowControl"
+<UserControl x:Class="CodingWithCalvin.CouchbaseExplorer.CouchbaseExplorerWindowControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:vm="clr-namespace:CodingWithCalvin.CouchbaseExplorer.ViewModels"
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Name="MyToolWindow">
+             d:DesignHeight="400" d:DesignWidth="300"
+             Name="CouchbaseExplorerControl">
+
+    <UserControl.Resources>
+        <!-- TreeView Item Style for proper selection binding -->
+        <Style TargetType="TreeViewItem">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+        </Style>
+
+        <!-- Context Menu for Connections root (empty space) -->
+        <ContextMenu x:Key="RootContextMenu">
+            <MenuItem Header="Add Connection..." Command="{Binding AddConnectionCommand}" />
+        </ContextMenu>
+
+        <!-- Context Menu for Disconnected Connection -->
+        <ContextMenu x:Key="DisconnectedConnectionContextMenu">
+            <MenuItem Header="Connect" Command="{Binding ConnectCommand}" />
+            <Separator />
+            <MenuItem Header="Edit Connection..." Command="{Binding EditConnectionCommand}" />
+            <MenuItem Header="Delete Connection" Command="{Binding DeleteConnectionCommand}" />
+        </ContextMenu>
+
+        <!-- Context Menu for Connected Connection -->
+        <ContextMenu x:Key="ConnectedConnectionContextMenu">
+            <MenuItem Header="Disconnect" Command="{Binding DisconnectCommand}" />
+            <MenuItem Header="Refresh" Command="{Binding RefreshCommand}" />
+            <Separator />
+            <MenuItem Header="Edit Connection..." Command="{Binding EditConnectionCommand}" />
+            <MenuItem Header="Delete Connection" Command="{Binding DeleteConnectionCommand}" />
+        </ContextMenu>
+
+        <!-- Context Menu for Bucket -->
+        <ContextMenu x:Key="BucketContextMenu">
+            <MenuItem Header="Refresh" Command="{Binding RefreshCommand}" />
+        </ContextMenu>
+
+        <!-- Context Menu for Scope -->
+        <ContextMenu x:Key="ScopeContextMenu">
+            <MenuItem Header="Refresh" Command="{Binding RefreshCommand}" />
+        </ContextMenu>
+
+        <!-- Context Menu for Collection -->
+        <ContextMenu x:Key="CollectionContextMenu">
+            <MenuItem Header="New Document..." Command="{Binding NewDocumentCommand}" />
+            <Separator />
+            <MenuItem Header="Refresh" Command="{Binding RefreshCommand}" />
+        </ContextMenu>
+
+        <!-- Context Menu for Document -->
+        <ContextMenu x:Key="DocumentContextMenu">
+            <MenuItem Header="Open" Command="{Binding OpenDocumentCommand}" />
+            <Separator />
+            <MenuItem Header="Copy Document ID" Command="{Binding CopyDocumentIdCommand}" />
+            <Separator />
+            <MenuItem Header="Delete" Command="{Binding DeleteDocumentCommand}" />
+        </ContextMenu>
+
+        <!-- Data Template for Connection Node -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:ConnectionNode}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚡" Margin="0,0,5,0" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+                <TextBlock Text="○" Margin="0,0,5,0" Visibility="{Binding IsConnected, Converter={StaticResource InverseBoolToVisibilityConverter}, FallbackValue=Visible}" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- Data Template for Buckets Folder Node -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:BucketsFolderNode}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📁" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- Data Template for Indexes Folder Node -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:IndexesFolderNode}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📁" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- Data Template for Bucket Node -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:BucketNode}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🪣" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- Data Template for Scope Node -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:ScopeNode}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📂" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- Data Template for Collection Node -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:CollectionNode}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📄" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- Data Template for Document Node -->
+        <DataTemplate DataType="{x:Type vm:DocumentNode}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{}{ }" Margin="0,0,5,0" FontFamily="Consolas" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Data Template for Index Node -->
+        <DataTemplate DataType="{x:Type vm:IndexNode}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚡" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Data Template for Placeholder Node (Loading...) -->
+        <DataTemplate DataType="{x:Type vm:PlaceholderNode}">
+            <TextBlock Text="{Binding Name}" FontStyle="Italic"
+                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+        </DataTemplate>
+
+        <!-- Data Template for Load More Node -->
+        <DataTemplate DataType="{x:Type vm:LoadMoreNode}">
+            <TextBlock Text="{Binding Name}" FontStyle="Italic" TextDecorations="Underline" Cursor="Hand"
+                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+        </DataTemplate>
+
+        <!-- Bool to Visibility Converter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <!-- Inverse Bool to Visibility Converter -->
+        <vm:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+
+        <!-- Count to Visibility Converter (shows when count is 0) -->
+        <vm:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+    </UserControl.Resources>
+
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Margin="10" HorizontalAlignment="Center">Couchbase Explorer</TextBlock>
-            <TreeView x:Name="ServersTreeView" Height="240">
-            </TreeView>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <ToolBar Grid.Row="0"
+                 Background="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarGradientKey}}">
+            <Button Command="{Binding AddConnectionCommand}" ToolTip="Add Connection">
+                <TextBlock Text="➕" />
+            </Button>
+            <Button Command="{Binding RefreshCommand}" ToolTip="Refresh">
+                <TextBlock Text="🔄" />
+            </Button>
+            <Button Command="{Binding CollapseAllCommand}" ToolTip="Collapse All">
+                <TextBlock Text="⊟" />
+            </Button>
+        </ToolBar>
+
+        <!-- Tree View -->
+        <TreeView Grid.Row="1"
+                  x:Name="ExplorerTreeView"
+                  ItemsSource="{Binding Connections}"
+                  Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}"
+                  BorderThickness="0"
+                  ContextMenu="{StaticResource RootContextMenu}"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.VirtualizationMode="Recycling">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding NodeType}" Value="Connection">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="Connect" Command="{Binding DataContext.ConnectCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Disconnect" Command="{Binding DataContext.DisconnectCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <Separator />
+                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <Separator />
+                                        <MenuItem Header="Edit Connection..." Command="{Binding DataContext.EditConnectionCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Delete Connection" Command="{Binding DataContext.DeleteConnectionCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding NodeType}" Value="Bucket">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding NodeType}" Value="Scope">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding NodeType}" Value="Collection">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="New Document..." Command="{Binding DataContext.NewDocumentCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <Separator />
+                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding NodeType}" Value="Document">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open" Command="{Binding DataContext.OpenDocumentCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <Separator />
+                                        <MenuItem Header="Copy Document ID" Command="{Binding DataContext.CopyDocumentIdCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <Separator />
+                                        <MenuItem Header="Delete" Command="{Binding DataContext.DeleteDocumentCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>
+
+        <!-- Empty State -->
+        <TextBlock Grid.Row="1"
+                   Text="Right-click to add a connection"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontStyle="Italic"
+                   Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
+                   Visibility="{Binding Connections.Count, Converter={StaticResource CountToVisibilityConverter}, FallbackValue=Visible}" />
     </Grid>
 </UserControl>
