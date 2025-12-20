@@ -74,6 +74,30 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VSCommandTable.vsct</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\BucketNode.cs" />
+    <Compile Include="ViewModels\BucketsFolderNode.cs" />
+    <Compile Include="ViewModels\CollectionNode.cs" />
+    <Compile Include="ViewModels\ConnectionNode.cs" />
+    <Compile Include="ViewModels\ConnectionDialogViewModel.cs" />
+    <Compile Include="ViewModels\Converters.cs" />
+    <Compile Include="ViewModels\CouchbaseExplorerViewModel.cs" />
+    <Compile Include="ViewModels\DocumentNode.cs" />
+    <Compile Include="ViewModels\IndexesFolderNode.cs" />
+    <Compile Include="ViewModels\IndexNode.cs" />
+    <Compile Include="ViewModels\LoadMoreNode.cs" />
+    <Compile Include="ViewModels\PlaceholderNode.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
+    <Compile Include="ViewModels\ScopeNode.cs" />
+    <Compile Include="ViewModels\TreeNodeBase.cs" />
+    <Compile Include="Dialogs\ConnectionDialog.xaml.cs">
+      <DependentUpon>ConnectionDialog.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Dialogs\ConnectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">
@@ -125,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CouchbaseNetClient">
-      <Version>3.5.2</Version>
+      <Version>3.8.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.9.37000</Version>
