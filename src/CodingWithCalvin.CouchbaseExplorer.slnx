@@ -10,7 +10,7 @@
     <File Path="../README.md" />
     <File Path="../resources/extension.manifest.json" />
   </Folder>
-  <Project Path="CodingWithCalvin.CouchbaseExplorer/CodingWithCalvin.CouchbaseExplorer.csproj">
+  <Project Path="CodingWithCalvin.CouchbaseExplorer/CodingWithCalvin.CouchbaseExplorer.csproj" Id="8af8beef-6fcc-4479-8d85-540a414d0ea2">
     <Platform Solution="*|arm64" Project="arm64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />
