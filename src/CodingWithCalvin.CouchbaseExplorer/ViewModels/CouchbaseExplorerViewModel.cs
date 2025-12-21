@@ -7,12 +7,14 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using CodingWithCalvin.CouchbaseExplorer.Dialogs;
+using CodingWithCalvin.CouchbaseExplorer.Services;
 
 namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 {
     public class CouchbaseExplorerViewModel : INotifyPropertyChanged
     {
         private TreeNodeBase _selectedNode;
+        private ConnectionSettingsService _settingsService;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -65,6 +67,36 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             OpenDocumentCommand = new RelayCommand(OnOpenDocument, IsDocumentSelected);
             DeleteDocumentCommand = new RelayCommand(OnDeleteDocument, IsDocumentSelected);
             CopyDocumentIdCommand = new RelayCommand(OnCopyDocumentId, IsDocumentSelected);
+
+            LoadConnections();
+        }
+
+        private void LoadConnections()
+        {
+            try
+            {
+                _settingsService = new ConnectionSettingsService();
+                var savedConnections = _settingsService.LoadConnections();
+
+                foreach (var connectionInfo in savedConnections)
+                {
+                    var connectionNode = new ConnectionNode
+                    {
+                        Id = connectionInfo.Id,
+                        Name = connectionInfo.Name,
+                        ConnectionString = connectionInfo.ConnectionString,
+                        Username = connectionInfo.Username,
+                        UseSsl = connectionInfo.UseSsl,
+                        IsConnected = false
+                    };
+
+                    Connections.Add(connectionNode);
+                }
+            }
+            catch (Exception)
+            {
+                // If settings can't be loaded, start with empty connections
+            }
         }
 
         private HashSet<string> GetExistingConnectionNames()
@@ -93,7 +125,17 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                     IsConnected = false
                 };
 
-                // TODO: Store password securely using Windows Credential Manager
+                CredentialManagerService.SavePassword(newConnection.Id, dialogViewModel.Password);
+
+                var connectionInfo = new ConnectionInfo
+                {
+                    Id = newConnection.Id,
+                    Name = newConnection.Name,
+                    ConnectionString = newConnection.ConnectionString,
+                    Username = newConnection.Username,
+                    UseSsl = newConnection.UseSsl
+                };
+                _settingsService.AddConnection(connectionInfo);
 
                 Connections.Add(newConnection);
             }
@@ -163,7 +205,17 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                     connection.Username = dialogViewModel.Username;
                     connection.UseSsl = dialogViewModel.UseSsl;
 
-                    // TODO: Update password in Windows Credential Manager
+                    CredentialManagerService.SavePassword(connection.Id, dialogViewModel.Password);
+
+                    var connectionInfo = new ConnectionInfo
+                    {
+                        Id = connection.Id,
+                        Name = connection.Name,
+                        ConnectionString = connection.ConnectionString,
+                        Username = connection.Username,
+                        UseSsl = connection.UseSsl
+                    };
+                    _settingsService.UpdateConnection(connectionInfo);
                 }
             }
         }
@@ -187,7 +239,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                         connection.IsConnected = false;
                     }
 
-                    // TODO: Remove password from Windows Credential Manager
+                    _settingsService.DeleteConnection(connection.Id);
 
                     Connections.Remove(connection);
                 }

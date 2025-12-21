@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
+using CodingWithCalvin.CouchbaseExplorer.Services;
 
 namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 {
@@ -237,6 +238,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                 _host = existingConnection.ConnectionString;
                 _username = existingConnection.Username;
                 _useSsl = existingConnection.UseSsl;
+
+                _password = CredentialManagerService.GetPassword(existingConnection.Id);
 
                 // Detect if it's Capella based on URL
                 if (!string.IsNullOrEmpty(_host) && _host.Contains(".cloud.couchbase.com"))
