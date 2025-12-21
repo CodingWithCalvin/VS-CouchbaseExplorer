@@ -75,6 +75,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VSCommandTable.vsct</DependentUpon>
     </Compile>
+    <Compile Include="Services\ConnectionInfo.cs" />
+    <Compile Include="Services\ConnectionSettingsService.cs" />
+    <Compile Include="Services\CredentialManagerService.cs" />
     <Compile Include="ViewModels\BucketNode.cs" />
     <Compile Include="ViewModels\BucketsFolderNode.cs" />
     <Compile Include="ViewModels\CollectionNode.cs" />

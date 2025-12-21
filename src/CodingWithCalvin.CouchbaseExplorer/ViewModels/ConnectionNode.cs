@@ -1,3 +1,5 @@
+using System;
+
 namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 {
     public class ConnectionNode : TreeNodeBase
@@ -6,6 +8,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
         private string _connectionString;
 
         public override string NodeType => "Connection";
+
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public bool IsConnected
         {
