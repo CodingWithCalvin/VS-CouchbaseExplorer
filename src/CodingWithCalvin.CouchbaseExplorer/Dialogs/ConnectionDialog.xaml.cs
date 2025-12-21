@@ -40,6 +40,20 @@ namespace CodingWithCalvin.CouchbaseExplorer.Dialogs
             }
         }
 
+        private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+            {
+                DragMove();
+            }
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+
         protected override void OnClosed(System.EventArgs e)
         {
             ViewModel.RequestClose -= OnRequestClose;

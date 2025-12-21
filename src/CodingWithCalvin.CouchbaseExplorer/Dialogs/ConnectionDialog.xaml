@@ -11,17 +11,20 @@
                         ResizeMode="NoResize"
                         WindowStartupLocation="CenterOwner"
                         ShowInTaskbar="False"
-                        Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
-                        Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}">
+                        WindowStyle="None"
+                        AllowsTransparency="True"
+                        Background="Transparent">
 
     <platformUi:DialogWindow.Resources>
         <vm:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
+        <!-- Error text style - accessible with icon prefix -->
         <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.ControlEditRequiredBackgroundKey}}" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Margin" Value="0,2,0,0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,4,0,0" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
@@ -35,40 +38,201 @@
             <Setter Property="Margin" Value="0,0,0,12" />
         </Style>
 
+        <!-- GroupBox with themed header and background -->
         <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
             <Setter Property="Margin" Value="0,0,0,12" />
             <Setter Property="Padding" Value="8" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.AccentBorderKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.PanelBorderKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0"
+                                    Background="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarGradientBeginKey}}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1,1,1,0"
+                                    Padding="6,4">
+                                <ContentPresenter ContentSource="Header"
+                                                  TextBlock.Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
+                                                  TextBlock.FontWeight="SemiBold" />
+                            </Border>
+                            <Border Grid.Row="1"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1,0,1,1"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- TextBox with proper input field colors and selection -->
         <Style TargetType="TextBox">
-            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBackgroundKey}}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.AccentBorderKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBorderKey}}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
             <Setter Property="Padding" Value="4" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxMouseOverBorderKey}}" />
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.AccentBorderKey}}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
+        <!-- PasswordBox with proper input field colors -->
         <Style TargetType="PasswordBox">
-            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBackgroundKey}}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.AccentBorderKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBorderKey}}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
             <Setter Property="Padding" Value="4" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxMouseOverBorderKey}}" />
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.AccentBorderKey}}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
+        <!-- RadioButton with themed bullet -->
         <Style TargetType="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBackgroundKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBorderKey}}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Width="16" Height="16" VerticalAlignment="Center">
+                                <Ellipse x:Name="OuterEllipse"
+                                         Fill="{TemplateBinding Background}"
+                                         Stroke="{TemplateBinding BorderBrush}"
+                                         StrokeThickness="1" />
+                                <Ellipse x:Name="CheckEllipse"
+                                         Width="8" Height="8"
+                                         Fill="{DynamicResource {x:Static vsshell:VsBrushes.AccentMediumKey}}"
+                                         Visibility="Collapsed" />
+                            </Grid>
+                            <ContentPresenter Margin="6,0,0,0"
+                                              VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckEllipse" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxMouseOverBorderKey}}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- CheckBox with themed checkmark -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBackgroundKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBorderKey}}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Width="16" Height="16" VerticalAlignment="Center">
+                                <Border x:Name="OuterBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1" />
+                                <Path x:Name="CheckMark"
+                                      Data="M 2,5 L 5,9 L 10,2"
+                                      Stroke="{DynamicResource {x:Static vsshell:VsBrushes.AccentMediumKey}}"
+                                      StrokeThickness="2"
+                                      Margin="2"
+                                      Visibility="Collapsed" />
+                            </Grid>
+                            <ContentPresenter Margin="6,0,0,0"
+                                              VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxMouseOverBorderKey}}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+                                <Setter TargetName="CheckMark" Property="Stroke" Value="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Button with hover and pressed states -->
         <Style TargetType="Button">
-            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ButtonFaceKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBackgroundKey}}" />
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.ButtonTextKey}}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.AccentBorderKey}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.ComboBoxBorderKey}}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightTextKey}}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightTextKey}}" />
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.8" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="Transparent" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.PanelBorderKey}}" />
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="TextBlock">
@@ -76,25 +240,84 @@
         </Style>
     </platformUi:DialogWindow.Resources>
 
-    <Grid Margin="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Border Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+            BorderBrush="{DynamicResource {x:Static vsshell:VsBrushes.PanelBorderKey}}"
+            BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarGradientBeginKey}}"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid Height="30">
+                <TextBlock Text="{Binding DialogTitle}"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+                <Button x:Name="CloseButton"
+                        Content="&#xE8BB;"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="10"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch"
+                        Width="46"
+                        Click="CloseButton_Click"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="CloseBorder"
+                                                Background="Transparent">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="CloseBorder" Property="Background" Value="#FFE81123" />
+                                                <Setter Property="Foreground" Value="White" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Content Area -->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
         <!-- Connection Name -->
         <StackPanel Grid.Row="0" Style="{StaticResource FieldContainerStyle}">
-            <TextBlock Text="Connection Name:" Style="{StaticResource LabelStyle}" />
+            <TextBlock Style="{StaticResource LabelStyle}">
+                <Run Text="Connection Name:" /><Run Text=" *" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+            </TextBlock>
             <TextBox Text="{Binding ConnectionName, UpdateSourceTrigger=PropertyChanged}"
                      MaxLength="100" />
-            <TextBlock Text="{Binding ConnectionNameError}"
-                       Style="{StaticResource ErrorTextStyle}"
-                       Visibility="{Binding ConnectionNameError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+            <TextBlock Style="{StaticResource ErrorTextStyle}"
+                       Visibility="{Binding ConnectionNameError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                <Run Text="&#x26A0;" FontFamily="Segoe UI Symbol" Foreground="#FFCC7000" /><Run Text=" " /><Run Text="{Binding ConnectionNameError}" />
+            </TextBlock>
         </StackPanel>
 
         <!-- Connection Type -->
@@ -110,34 +333,43 @@
 
         <!-- Host / Connection String -->
         <StackPanel Grid.Row="2" Style="{StaticResource FieldContainerStyle}">
-            <TextBlock Text="Host / Connection String:" Style="{StaticResource LabelStyle}" />
+            <TextBlock Style="{StaticResource LabelStyle}">
+                <Run Text="Host / Connection String:" /><Run Text=" *" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+            </TextBlock>
             <TextBox Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="{Binding HostHint}"
                        FontSize="11"
                        Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
                        Margin="0,2,0,0" />
-            <TextBlock Text="{Binding HostError}"
-                       Style="{StaticResource ErrorTextStyle}"
-                       Visibility="{Binding HostError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+            <TextBlock Style="{StaticResource ErrorTextStyle}"
+                       Visibility="{Binding HostError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                <Run Text="&#x26A0;" FontFamily="Segoe UI Symbol" Foreground="#FFCC7000" /><Run Text=" " /><Run Text="{Binding HostError}" />
+            </TextBlock>
         </StackPanel>
 
         <!-- Authentication -->
         <GroupBox Grid.Row="3" Header="Authentication" Style="{StaticResource GroupBoxStyle}">
             <StackPanel>
                 <StackPanel Style="{StaticResource FieldContainerStyle}">
-                    <TextBlock Text="Username:" Style="{StaticResource LabelStyle}" />
+                    <TextBlock Style="{StaticResource LabelStyle}">
+                        <Run Text="Username:" /><Run Text=" *" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+                    </TextBlock>
                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Text="{Binding UsernameError}"
-                               Style="{StaticResource ErrorTextStyle}"
-                               Visibility="{Binding UsernameError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                    <TextBlock Style="{StaticResource ErrorTextStyle}"
+                               Visibility="{Binding UsernameError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                        <Run Text="&#x26A0;" FontFamily="Segoe UI Symbol" Foreground="#FFCC7000" /><Run Text=" " /><Run Text="{Binding UsernameError}" />
+                    </TextBlock>
                 </StackPanel>
 
                 <StackPanel Margin="0">
-                    <TextBlock Text="Password:" Style="{StaticResource LabelStyle}" />
+                    <TextBlock Style="{StaticResource LabelStyle}">
+                        <Run Text="Password:" /><Run Text=" *" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+                    </TextBlock>
                     <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_PasswordChanged" />
-                    <TextBlock Text="{Binding PasswordError}"
-                               Style="{StaticResource ErrorTextStyle}"
-                               Visibility="{Binding PasswordError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                    <TextBlock Style="{StaticResource ErrorTextStyle}"
+                               Visibility="{Binding PasswordError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                        <Run Text="&#x26A0;" FontFamily="Segoe UI Symbol" Foreground="#FFCC7000" /><Run Text=" " /><Run Text="{Binding PasswordError}" />
+                    </TextBlock>
                 </StackPanel>
             </StackPanel>
         </GroupBox>
@@ -155,38 +387,34 @@
         </StackPanel>
 
         <!-- Test Connection -->
-        <GroupBox Grid.Row="5" Style="{StaticResource GroupBoxStyle}" Padding="8">
-            <StackPanel>
-                <Button Content="Test Connection"
-                        Command="{Binding TestConnectionCommand}"
-                        HorizontalAlignment="Left"
-                        Padding="16,6"
-                        Margin="0,0,0,8" />
-                <StackPanel Orientation="Horizontal">
-                    <Ellipse Width="10" Height="10"
-                             Fill="{Binding TestStatusColor}"
-                             Margin="0,0,8,0"
-                             VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding TestStatusMessage}"
-                               VerticalAlignment="Center" />
-                </StackPanel>
-            </StackPanel>
-        </GroupBox>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="6"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,8,0,0">
-            <Button Content="Save"
-                    Command="{Binding SaveCommand}"
-                    IsDefault="True"
-                    Padding="24,6"
-                    Margin="0,0,8,0" />
-            <Button Content="Cancel"
-                    Command="{Binding CancelCommand}"
-                    IsCancel="True"
-                    Padding="24,6" />
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Style="{StaticResource FieldContainerStyle}">
+            <Button Content="Test Connection"
+                    Command="{Binding TestConnectionCommand}"
+                    Padding="16,6" />
+            <Ellipse Width="10" Height="10"
+                     Fill="{Binding TestStatusColor}"
+                     Margin="12,0,8,0"
+                     VerticalAlignment="Center" />
+            <TextBlock Text="{Binding TestStatusMessage}"
+                       VerticalAlignment="Center" />
         </StackPanel>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="6"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,8,0,0">
+                <Button Content="Save"
+                        Command="{Binding SaveCommand}"
+                        IsDefault="True"
+                        Padding="24,6"
+                        Margin="0,0,8,0" />
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        IsCancel="True"
+                        Padding="24,6" />
+            </StackPanel>
+        </Grid>
     </Grid>
+    </Border>
 </platformUi:DialogWindow>
