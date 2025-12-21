@@ -4,6 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+             xmlns:theming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:vm="clr-namespace:CodingWithCalvin.CouchbaseExplorer.ViewModels"
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
@@ -70,78 +73,98 @@
         <!-- Data Template for Connection Node -->
         <HierarchicalDataTemplate DataType="{x:Type vm:ConnectionNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="⚡" Margin="0,0,5,0" Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
-                <TextBlock Text="○" Margin="0,0,5,0" Visibility="{Binding IsConnected, Converter={StaticResource InverseBoolToVisibilityConverter}, FallbackValue=Visible}" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.DatabaseRunning}"
+                                    Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.Disconnect}"
+                                    Visibility="{Binding IsConnected, Converter={StaticResource InverseBoolToVisibilityConverter}, FallbackValue=Visible}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- Data Template for Buckets Folder Node -->
         <HierarchicalDataTemplate DataType="{x:Type vm:BucketsFolderNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="📁" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.FolderClosed}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- Data Template for Indexes Folder Node -->
         <HierarchicalDataTemplate DataType="{x:Type vm:IndexesFolderNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="📁" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.FolderClosed}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- Data Template for Bucket Node -->
         <HierarchicalDataTemplate DataType="{x:Type vm:BucketNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="🪣" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.Database}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- Data Template for Scope Node -->
         <HierarchicalDataTemplate DataType="{x:Type vm:ScopeNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="📂" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.Namespace}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- Data Template for Collection Node -->
         <HierarchicalDataTemplate DataType="{x:Type vm:CollectionNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="📄" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.Table}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- Data Template for Document Node -->
         <DataTemplate DataType="{x:Type vm:DocumentNode}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{}{ }" Margin="0,0,5,0" FontFamily="Consolas" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.Document}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </DataTemplate>
 
         <!-- Data Template for Index Node -->
         <DataTemplate DataType="{x:Type vm:IndexNode}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="⚡" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Name}" />
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.SearchMember}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </DataTemplate>
 
         <!-- Data Template for Placeholder Node (Loading...) -->
         <DataTemplate DataType="{x:Type vm:PlaceholderNode}">
-            <TextBlock Text="{Binding Name}" FontStyle="Italic"
-                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+            <StackPanel Orientation="Horizontal">
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.StatusRunning}" />
+                <TextBlock Text="{Binding Name}" FontStyle="Italic" VerticalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}" />
+            </StackPanel>
         </DataTemplate>
 
         <!-- Data Template for Load More Node -->
         <DataTemplate DataType="{x:Type vm:LoadMoreNode}">
-            <TextBlock Text="{Binding Name}" FontStyle="Italic" TextDecorations="Underline" Cursor="Hand"
-                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+            <StackPanel Orientation="Horizontal">
+                <imaging:CrispImage Width="16" Height="16" Margin="0,0,5,0"
+                                    Moniker="{x:Static catalog:KnownMonikers.Download}" />
+                <TextBlock Text="{Binding Name}" FontStyle="Italic" TextDecorations="Underline" Cursor="Hand"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
+            </StackPanel>
         </DataTemplate>
 
         <!-- Bool to Visibility Converter -->
@@ -161,18 +184,49 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
-        <ToolBar Grid.Row="0"
-                 Background="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarGradientKey}}">
-            <Button Command="{Binding AddConnectionCommand}" ToolTip="Add Connection">
-                <TextBlock Text="➕" />
-            </Button>
-            <Button Command="{Binding RefreshCommand}" ToolTip="Refresh">
-                <TextBlock Text="🔄" />
-            </Button>
-            <Button Command="{Binding CollapseAllCommand}" ToolTip="Collapse All">
-                <TextBlock Text="⊟" />
-            </Button>
-        </ToolBar>
+        <Border Grid.Row="0"
+                Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}"
+                BorderBrush="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBorderKey}}"
+                BorderThickness="0,0,0,1"
+                Padding="2"
+                theming:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsshell:VsColors.ToolWindowBackgroundKey}}">
+            <Border.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Padding" Value="4" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarHoverKey}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Border.Resources>
+            <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding AddConnectionCommand}" ToolTip="Add Connection">
+                    <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Add}" />
+                </Button>
+                <Button Command="{Binding RefreshCommand}" ToolTip="Refresh">
+                    <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Refresh}" />
+                </Button>
+                <Button Command="{Binding CollapseAllCommand}" ToolTip="Collapse All">
+                    <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.CollapseAll}" />
+                </Button>
+            </StackPanel>
+        </Border>
 
         <!-- Tree View -->
         <TreeView Grid.Row="1"
@@ -182,7 +236,8 @@
                   BorderThickness="0"
                   ContextMenu="{StaticResource RootContextMenu}"
                   VirtualizingStackPanel.IsVirtualizing="True"
-                  VirtualizingStackPanel.VirtualizationMode="Recycling">
+                  VirtualizingStackPanel.VirtualizationMode="Recycling"
+                  theming:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsshell:VsColors.ToolWindowBackgroundKey}}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
