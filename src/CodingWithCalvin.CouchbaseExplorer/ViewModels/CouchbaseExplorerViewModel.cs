@@ -412,9 +412,40 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             return SelectedNode is CollectionNode;
         }
 
-        private void OnOpenDocument(object parameter)
+        private async void OnOpenDocument(object parameter)
         {
-            // TODO: Open document in editor
+            var doc = parameter as DocumentNode ?? SelectedNode as DocumentNode;
+            if (doc == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var content = await CouchbaseService.GetDocumentAsync(
+                    doc.ConnectionId,
+                    doc.BucketName,
+                    doc.ScopeName,
+                    doc.CollectionName,
+                    doc.DocumentId);
+
+                await DocumentEditorService.OpenDocumentAsync(
+                    doc.ConnectionId,
+                    doc.DocumentId,
+                    doc.BucketName,
+                    doc.ScopeName,
+                    doc.CollectionName,
+                    content.Content,
+                    content.Cas);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Failed to load document: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void OnDeleteDocument(object parameter)
