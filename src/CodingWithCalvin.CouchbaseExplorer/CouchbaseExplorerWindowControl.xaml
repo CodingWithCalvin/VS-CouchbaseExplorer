@@ -231,16 +231,26 @@
             </StackPanel>
         </Border>
 
-        <!-- Tree View -->
-        <TreeView Grid.Row="1"
-                  x:Name="ExplorerTreeView"
-                  ItemsSource="{Binding Connections}"
-                  Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}"
-                  BorderThickness="0"
-                  ContextMenu="{StaticResource RootContextMenu}"
-                  VirtualizingStackPanel.IsVirtualizing="True"
-                  VirtualizingStackPanel.VirtualizationMode="Recycling"
-                  theming:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsshell:VsColors.ToolWindowBackgroundKey}}">
+        <!-- Tree View Container with Watermark -->
+        <Grid Grid.Row="1" Background="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowBackgroundKey}}">
+            <!-- Watermark Logo -->
+            <Image Source="/CodingWithCalvin.CouchbaseExplorer;component/Resources/watermark.png"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Center"
+                   Margin="20"
+                   Opacity="0.08"
+                   Stretch="Uniform"
+                   IsHitTestVisible="False" />
+
+            <!-- Tree View -->
+            <TreeView x:Name="ExplorerTreeView"
+                      ItemsSource="{Binding Connections}"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      ContextMenu="{StaticResource RootContextMenu}"
+                      VirtualizingStackPanel.IsVirtualizing="True"
+                      VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      theming:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsshell:VsColors.ToolWindowBackgroundKey}}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -307,15 +317,16 @@
                     </Style.Triggers>
                 </Style>
             </TreeView.ItemContainerStyle>
-        </TreeView>
+            </TreeView>
 
-        <!-- Empty State -->
-        <TextBlock Grid.Row="1"
-                   Text="Right-click to add a connection"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontStyle="Italic"
-                   Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
-                   Visibility="{Binding Connections.Count, Converter={StaticResource CountToVisibilityConverter}, FallbackValue=Visible}" />
+            <!-- Empty State -->
+            <TextBlock Text="Right-click to add a connection"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontStyle="Italic"
+                       Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
+                       Visibility="{Binding Connections.Count, Converter={StaticResource CountToVisibilityConverter}, FallbackValue=Visible}"
+                       IsHitTestVisible="False" />
+        </Grid>
     </Grid>
 </UserControl>

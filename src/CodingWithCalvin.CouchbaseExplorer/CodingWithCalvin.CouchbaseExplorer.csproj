@@ -106,6 +106,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\watermark.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="..\..\LICENSE">
       <Link>resources\LICENSE</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
