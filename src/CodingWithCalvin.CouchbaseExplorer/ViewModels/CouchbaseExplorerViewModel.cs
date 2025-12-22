@@ -150,14 +150,32 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             await ConnectToNodeAsync(connection);
         }
 
-        private void OnRefresh(object parameter)
+        private async void OnRefresh(object parameter)
         {
-            // TODO: Refresh selected node or all connections
+            var node = parameter as TreeNodeBase ?? SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
+
+            switch (node)
+            {
+                case ConnectionNode connection when connection.IsConnected:
+                    await LoadBucketsAsync(connection);
+                    break;
+                case BucketNode bucket:
+                    await bucket.RefreshAsync();
+                    break;
+                case ScopeNode scope:
+                    await scope.RefreshAsync();
+                    break;
+            }
         }
 
         private bool CanRefresh(object parameter)
         {
-            return SelectedNode != null || Connections.Count > 0;
+            var node = parameter as TreeNodeBase ?? SelectedNode;
+            return node is ConnectionNode conn ? conn.IsConnected : node is BucketNode || node is ScopeNode;
         }
 
         private void OnCollapseAll(object parameter)
