@@ -1,8 +1,18 @@
+using System;
+using System.Threading.Tasks;
+using CodingWithCalvin.CouchbaseExplorer.Services;
+
 namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 {
     public class ScopeNode : TreeNodeBase
     {
+        private bool _hasLoadedCollections;
+
         public override string NodeType => "Scope";
+
+        public string ConnectionId { get; set; }
+
+        public string BucketName { get; set; }
 
         public ScopeNode()
         {
@@ -10,9 +20,55 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             Children.Add(new PlaceholderNode());
         }
 
-        protected override void OnExpanded()
+        protected override async void OnExpanded()
         {
-            // TODO: Load collections when expanded
+            if (_hasLoadedCollections)
+            {
+                return;
+            }
+
+            await LoadCollectionsAsync();
+        }
+
+        public async Task LoadCollectionsAsync()
+        {
+            IsLoading = true;
+
+            try
+            {
+                var collections = await CouchbaseService.GetCollectionsAsync(ConnectionId, BucketName, Name);
+
+                Children.Clear();
+
+                foreach (var collection in collections)
+                {
+                    var collectionNode = new CollectionNode
+                    {
+                        Name = collection.Name,
+                        ConnectionId = ConnectionId,
+                        BucketName = BucketName,
+                        ScopeName = Name,
+                        Parent = this
+                    };
+                    Children.Add(collectionNode);
+                }
+
+                if (Children.Count == 0)
+                {
+                    Children.Add(new PlaceholderNode { Name = "(No collections)" });
+                }
+
+                _hasLoadedCollections = true;
+            }
+            catch (Exception ex)
+            {
+                Children.Clear();
+                Children.Add(new PlaceholderNode { Name = $"(Error: {ex.Message})" });
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 }

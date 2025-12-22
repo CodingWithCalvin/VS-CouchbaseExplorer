@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using CodingWithCalvin.CouchbaseExplorer.Dialogs;
@@ -90,6 +91,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                         IsConnected = false
                     };
 
+                    connectionNode.ConnectRequested += OnConnectRequested;
                     Connections.Add(connectionNode);
                 }
             }
@@ -125,6 +127,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                     IsConnected = false
                 };
 
+                newConnection.ConnectRequested += OnConnectRequested;
+
                 CredentialManagerService.SavePassword(newConnection.Id, dialogViewModel.Password);
 
                 var connectionInfo = new ConnectionInfo
@@ -139,6 +143,11 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
                 Connections.Add(newConnection);
             }
+        }
+
+        private async void OnConnectRequested(ConnectionNode connection)
+        {
+            await ConnectToNodeAsync(connection);
         }
 
         private void OnRefresh(object parameter)
@@ -168,9 +177,61 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             }
         }
 
-        private void OnConnect(object parameter)
+        private async void OnConnect(object parameter)
         {
-            // TODO: Connect to cluster
+            if (SelectedNode is ConnectionNode connection)
+            {
+                await ConnectToNodeAsync(connection);
+            }
+        }
+
+        private async Task ConnectToNodeAsync(ConnectionNode connection)
+        {
+            if (connection.IsConnected || connection.IsLoading)
+            {
+                return;
+            }
+
+            connection.IsLoading = true;
+            connection.Children.Clear();
+            connection.Children.Add(new PlaceholderNode { Name = "Connecting..." });
+
+            try
+            {
+                var password = CredentialManagerService.GetPassword(connection.Id);
+
+                var clusterConnection = await Task.Run(async () =>
+                {
+                    return await CouchbaseService.ConnectAsync(
+                        connection.Id,
+                        connection.ConnectionString,
+                        connection.Username,
+                        password,
+                        connection.UseSsl);
+                });
+
+                connection.IsConnected = true;
+                connection.HasQueryService = clusterConnection.HasQueryService;
+                connection.HasKvService = clusterConnection.HasKvService;
+
+                // Load buckets
+                await LoadBucketsAsync(connection);
+            }
+            catch (Exception ex)
+            {
+                connection.Children.Clear();
+                connection.Children.Add(new PlaceholderNode { Name = "(Connection failed)" });
+
+                MessageBox.Show(
+                    $"Failed to connect to cluster: {ex.Message}",
+                    "Connection Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.IsLoading = false;
+            }
         }
 
         private bool CanConnect(object parameter)
@@ -178,14 +239,69 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             return SelectedNode is ConnectionNode conn && !conn.IsConnected;
         }
 
-        private void OnDisconnect(object parameter)
+        private async void OnDisconnect(object parameter)
         {
-            // TODO: Disconnect from cluster
+            if (SelectedNode is ConnectionNode connection)
+            {
+                try
+                {
+                    await CouchbaseService.DisconnectAsync(connection.Id);
+                    connection.IsConnected = false;
+                    connection.Children.Clear();
+                    connection.Children.Add(new PlaceholderNode());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        $"Failed to disconnect: {ex.Message}",
+                        "Disconnect Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
         }
 
         private bool CanDisconnect(object parameter)
         {
             return SelectedNode is ConnectionNode conn && conn.IsConnected;
+        }
+
+        private async Task LoadBucketsAsync(ConnectionNode connection)
+        {
+            try
+            {
+                connection.Children.Clear();
+                connection.Children.Add(new PlaceholderNode { Name = "Loading buckets..." });
+
+                var buckets = await Task.Run(async () =>
+                {
+                    return await CouchbaseService.GetBucketsAsync(connection.Id);
+                });
+
+                connection.Children.Clear();
+
+                foreach (var bucket in buckets)
+                {
+                    var bucketNode = new BucketNode
+                    {
+                        Name = bucket.Name,
+                        ConnectionId = connection.Id,
+                        BucketType = bucket.BucketType.ToString(),
+                        Parent = connection
+                    };
+                    connection.Children.Add(bucketNode);
+                }
+
+                if (connection.Children.Count == 0)
+                {
+                    connection.Children.Add(new PlaceholderNode { Name = "(No buckets)" });
+                }
+            }
+            catch (Exception ex)
+            {
+                connection.Children.Clear();
+                connection.Children.Add(new PlaceholderNode { Name = $"(Error: {ex.Message})" });
+            }
         }
 
         private void OnEditConnection(object parameter)

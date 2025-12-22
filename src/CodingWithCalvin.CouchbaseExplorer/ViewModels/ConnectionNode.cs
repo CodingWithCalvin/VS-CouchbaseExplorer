@@ -6,10 +6,17 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
     {
         private bool _isConnected;
         private string _connectionString;
+        private bool _hasQueryService;
+        private bool _hasKvService;
 
         public override string NodeType => "Connection";
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
+
+        /// <summary>
+        /// Event raised when the node is expanded and needs to connect.
+        /// </summary>
+        public event Action<ConnectionNode> ConnectRequested;
 
         public bool IsConnected
         {
@@ -27,6 +34,18 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
         public bool UseSsl { get; set; }
 
+        public bool HasQueryService
+        {
+            get => _hasQueryService;
+            set => SetProperty(ref _hasQueryService, value);
+        }
+
+        public bool HasKvService
+        {
+            get => _hasKvService;
+            set => SetProperty(ref _hasKvService, value);
+        }
+
         public ConnectionNode()
         {
             // Add placeholder for lazy loading
@@ -35,7 +54,11 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
         protected override void OnExpanded()
         {
-            // TODO: Load buckets and indexes when connected and expanded
+            // If not connected, request connection
+            if (!IsConnected)
+            {
+                ConnectRequested?.Invoke(this);
+            }
         }
     }
 }
