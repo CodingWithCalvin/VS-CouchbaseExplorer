@@ -79,6 +79,7 @@
     <Compile Include="Services\ConnectionSettingsService.cs" />
     <Compile Include="Services\CouchbaseService.cs" />
     <Compile Include="Services\CredentialManagerService.cs" />
+    <Compile Include="Services\DocumentEditorService.cs" />
     <Compile Include="ViewModels\BindingProxy.cs" />
     <Compile Include="ViewModels\BucketNode.cs" />
     <Compile Include="ViewModels\BucketsFolderNode.cs" />
@@ -99,9 +100,18 @@
     <Compile Include="Dialogs\ConnectionDialog.xaml.cs">
       <DependentUpon>ConnectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Editors\DocumentEditorControl.xaml.cs">
+      <DependentUpon>DocumentEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DocumentEditorFactory.cs" />
+    <Compile Include="Editors\DocumentEditorPane.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Dialogs\ConnectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\DocumentEditorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

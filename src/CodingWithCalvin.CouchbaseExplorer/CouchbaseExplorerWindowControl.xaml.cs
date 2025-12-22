@@ -19,6 +19,7 @@ namespace CodingWithCalvin.CouchbaseExplorer
 
             ExplorerTreeView.SelectedItemChanged += OnSelectedItemChanged;
             ExplorerTreeView.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
+            ExplorerTreeView.MouseDoubleClick += OnMouseDoubleClick;
         }
 
         private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -36,6 +37,15 @@ namespace CodingWithCalvin.CouchbaseExplorer
             {
                 treeViewItem.Focus();
                 treeViewItem.IsSelected = true;
+                e.Handled = true;
+            }
+        }
+
+        private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (ViewModel.SelectedNode is DocumentNode)
+            {
+                ViewModel.OpenDocumentCommand.Execute(null);
                 e.Handled = true;
             }
         }

@@ -198,6 +198,28 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
                 HasMore = hasMore
             };
         }
+
+        public static async Task<DocumentContent> GetDocumentAsync(string connectionId, string bucketName, string scopeName, string collectionName, string documentId)
+        {
+            var connection = GetConnection(connectionId);
+            if (connection == null)
+            {
+                throw new InvalidOperationException("Not connected to cluster");
+            }
+
+            var bucket = await connection.Cluster.BucketAsync(bucketName);
+            var scope = bucket.Scope(scopeName);
+            var collection = scope.Collection(collectionName);
+
+            var result = await collection.GetAsync(documentId);
+
+            return new DocumentContent
+            {
+                Id = documentId,
+                Content = result.ContentAs<object>(),
+                Cas = result.Cas
+            };
+        }
     }
 
     public class DocumentIdResult
@@ -209,5 +231,12 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
     {
         public List<string> DocumentIds { get; set; } = new List<string>();
         public bool HasMore { get; set; }
+    }
+
+    public class DocumentContent
+    {
+        public string Id { get; set; }
+        public object Content { get; set; }
+        public ulong Cas { get; set; }
     }
 }
