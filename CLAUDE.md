@@ -9,11 +9,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 1. **NEVER commit directly to main** - Always create a feature branch and submit a pull request
 2. **Conventional commits** - Format: `type(scope): description`
 3. **GitHub Issues for TODOs** - Use `gh` CLI to manage issues, no local TODO files. Use conventional commit format for issue titles
-4. **Pull Requests** - Use the conventional commit format for PR titles as you do for commits
-5. **Working an issue** - When working an issue, always create a new branch from an updated main branch
-6. **Branch Names** - Use the conventional commit `type` as the first prefix, and `scope` as the second, then a short description: `feat/ui/connection-dialog`
-7. **Check branch status before pushing** - Verify the remote tracking branch still exists before pushing. If a PR was merged/deleted, create a new branch from main instead
+4. **Pull Request titles** - Use conventional commit format (same as commits)
+5. **Branch naming** - Use format: `type/scope/short-description` (e.g., `feat/ui/settings-dialog`)
+6. **Working an issue** - Always create a new branch from an updated main branch
+7. **Check branch status before pushing** - Verify the remote tracking branch still exists. If a PR was merged/deleted, create a new branch from main instead
 8. **WPF for all UI** - All UI must be implemented using WPF (XAML/C#). No web-based technologies (HTML, JavaScript, WebView)
+
+---
+
+### GitHub CLI Commands
+
+```bash
+gh issue list                    # List open issues
+gh issue view <number>           # View details
+gh issue create --title "type(scope): description" --body "..."
+gh issue close <number>
+```
+
+### Conventional Commit Types
+
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `test` | Adding or updating tests |
+| `chore` | Maintenance tasks |
 
 ---
 

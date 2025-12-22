@@ -290,4 +290,4 @@ __pycache__/
 # Claude Code local settings
 CLAUDE.local.md
 
-.claude/settings.local.json
+.claude/
