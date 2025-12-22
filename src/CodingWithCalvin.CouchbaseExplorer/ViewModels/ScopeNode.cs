@@ -30,6 +30,14 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             await LoadCollectionsAsync();
         }
 
+        public async Task RefreshAsync()
+        {
+            _hasLoadedCollections = false;
+            Children.Clear();
+            Children.Add(new PlaceholderNode { Name = "Refreshing..." });
+            await LoadCollectionsAsync();
+        }
+
         public async Task LoadCollectionsAsync()
         {
             IsLoading = true;

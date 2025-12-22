@@ -34,6 +34,14 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             await LoadScopesAsync();
         }
 
+        public async Task RefreshAsync()
+        {
+            _hasLoadedScopes = false;
+            Children.Clear();
+            Children.Add(new PlaceholderNode { Name = "Refreshing..." });
+            await LoadScopesAsync();
+        }
+
         public async Task LoadScopesAsync()
         {
             IsLoading = true;
