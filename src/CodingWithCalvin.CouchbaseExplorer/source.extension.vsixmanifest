@@ -3,12 +3,12 @@
     <Metadata>
         <Identity Id="VS-CouchbaseExplorer" Version="1.0" Language="en-US" Publisher="Coding With Calvin" />
         <DisplayName>Couchbase Explorer</DisplayName>
-        <Description xml:space="preserve">Couchbase Explorer is an extension to Visual Studio that will assist in communication to a Couchbase Server /Capella during the development process.</Description>
+        <Description xml:space="preserve">Browse, explore, and manage your Couchbase Server data directly from Visual Studio. Connect to clusters, navigate buckets, scopes, and collections, and view documents with formatted JSON.</Description>
         <MoreInfo>https://github.com/codingwithcalvin/VS-CouchbaseExplorer</MoreInfo>
         <License>resources\LICENSE</License>
         <Icon>resources\logo.png</Icon>
         <PreviewImage>resources\logo.png</PreviewImage>
-        <Tags>couchbase, capella</Tags>
+        <Tags>couchbase, nosql, database, json</Tags>
         <Preview>true</Preview>
     </Metadata>
     <Installation>
