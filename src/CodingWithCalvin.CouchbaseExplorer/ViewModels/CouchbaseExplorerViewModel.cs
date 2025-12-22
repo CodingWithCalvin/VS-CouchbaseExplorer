@@ -179,7 +179,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
         private async void OnConnect(object parameter)
         {
-            if (SelectedNode is ConnectionNode connection)
+            var connection = parameter as ConnectionNode ?? SelectedNode as ConnectionNode;
+            if (connection != null)
             {
                 await ConnectToNodeAsync(connection);
             }
@@ -241,7 +242,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
         private async void OnDisconnect(object parameter)
         {
-            if (SelectedNode is ConnectionNode connection)
+            var connection = parameter as ConnectionNode ?? SelectedNode as ConnectionNode;
+            if (connection != null)
             {
                 try
                 {
@@ -306,7 +308,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
         private void OnEditConnection(object parameter)
         {
-            if (SelectedNode is ConnectionNode connection)
+            var connection = parameter as ConnectionNode ?? SelectedNode as ConnectionNode;
+            if (connection != null)
             {
                 var existingNames = GetExistingConnectionNames();
                 var dialogViewModel = new ConnectionDialogViewModel(existingNames, connection);
