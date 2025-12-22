@@ -166,5 +166,48 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
             var scope = scopes.FirstOrDefault(s => s.Name == scopeName);
             return scope?.Collections ?? new List<CollectionInfo>();
         }
+
+        public static async Task<DocumentQueryResult> GetDocumentIdsAsync(string connectionId, string bucketName, string scopeName, string collectionName, int limit = 50, int offset = 0)
+        {
+            var connection = GetConnection(connectionId);
+            if (connection == null)
+            {
+                throw new InvalidOperationException("Not connected to cluster");
+            }
+
+            var query = $"SELECT META().id FROM `{bucketName}`.`{scopeName}`.`{collectionName}` ORDER BY META().id LIMIT {limit + 1} OFFSET {offset}";
+
+            var result = await connection.Cluster.QueryAsync<DocumentIdResult>(query);
+            var documentIds = new List<string>();
+
+            await foreach (var row in result.Rows)
+            {
+                documentIds.Add(row.Id);
+            }
+
+            // Check if there are more documents (we fetched limit+1 to check)
+            var hasMore = documentIds.Count > limit;
+            if (hasMore)
+            {
+                documentIds.RemoveAt(documentIds.Count - 1);
+            }
+
+            return new DocumentQueryResult
+            {
+                DocumentIds = documentIds,
+                HasMore = hasMore
+            };
+        }
+    }
+
+    public class DocumentIdResult
+    {
+        public string Id { get; set; }
+    }
+
+    public class DocumentQueryResult
+    {
+        public List<string> DocumentIds { get; set; } = new List<string>();
+        public bool HasMore { get; set; }
     }
 }

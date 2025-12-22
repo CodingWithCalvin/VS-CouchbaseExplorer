@@ -34,7 +34,13 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
         public bool IsSelected
         {
             get => _isSelected;
-            set => SetProperty(ref _isSelected, value);
+            set
+            {
+                if (SetProperty(ref _isSelected, value) && value)
+                {
+                    OnSelected();
+                }
+            }
         }
 
         public bool IsLoading
@@ -50,6 +56,10 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
         public abstract string NodeType { get; }
 
         protected virtual void OnExpanded()
+        {
+        }
+
+        protected virtual void OnSelected()
         {
         }
 

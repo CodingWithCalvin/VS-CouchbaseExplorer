@@ -4,6 +4,8 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
     {
         public override string NodeType => "Document";
 
+        public string ConnectionId { get; set; }
+
         public string DocumentId { get; set; }
 
         public string BucketName { get; set; }
