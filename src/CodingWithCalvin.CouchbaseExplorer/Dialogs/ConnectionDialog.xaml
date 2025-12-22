@@ -326,8 +326,17 @@
                 <RadioButton Content="Couchbase Server"
                              IsChecked="{Binding IsCouchbaseServer}"
                              Margin="0,0,0,8" />
-                <RadioButton Content="Couchbase Capella"
-                             IsChecked="{Binding IsCouchbaseCapella}" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="Couchbase Capella"
+                                 IsChecked="{Binding IsCouchbaseCapella}"
+                                 IsEnabled="False" />
+                    <TextBlock Text="Coming Soon!"
+                               FontSize="11"
+                               FontStyle="Italic"
+                               Foreground="{DynamicResource {x:Static vsshell:VsBrushes.GrayTextKey}}"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0" />
+                </StackPanel>
             </StackPanel>
         </GroupBox>
 
