@@ -240,13 +240,6 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                 _useSsl = existingConnection.UseSsl;
 
                 _password = CredentialManagerService.GetPassword(existingConnection.Id);
-
-                // Detect if it's Capella based on URL
-                if (!string.IsNullOrEmpty(_host) && _host.Contains(".cloud.couchbase.com"))
-                {
-                    _isCouchbaseCapella = true;
-                    _isCouchbaseServer = false;
-                }
             }
 
             TestConnectionCommand = new RelayCommand(async _ => await TestConnectionAsync(), CanTestConnection);
@@ -254,12 +247,21 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             CancelCommand = new RelayCommand(_ => Cancel());
         }
 
+        private bool IsCapellaUrl(string host)
+        {
+            if (string.IsNullOrEmpty(host))
+            {
+                return false;
+            }
+
+            return host.Contains(".cloud.couchbase.com") ||
+                   host.StartsWith("couchbases://", StringComparison.OrdinalIgnoreCase);
+        }
+
         private void DetectCapellaUrl()
         {
-            if (!string.IsNullOrEmpty(Host) && Host.Contains(".cloud.couchbase.com"))
-            {
-                IsCouchbaseCapella = true;
-            }
+            // Re-validate host when URL changes to show Capella error if needed
+            ValidateHost();
         }
 
         private void ValidateConnectionName()
@@ -284,6 +286,10 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             if (string.IsNullOrWhiteSpace(Host))
             {
                 HostError = "Host is required";
+            }
+            else if (IsCapellaUrl(Host))
+            {
+                HostError = "Couchbase Capella connections are not supported yet";
             }
             else
             {
