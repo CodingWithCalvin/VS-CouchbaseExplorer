@@ -8,6 +8,12 @@
   "identity": {
     "internalName": "VS-CouchbaseExplorer"
   },
+  "assetFiles": [
+    {
+      "pathOnDisk": "resources/logo.png",
+      "targetPath": "resources/logo.png"
+    }
+  ],
   "overview": "../README.md",
   "publisher": "CodingWithCalvin",
   "qna": false,
