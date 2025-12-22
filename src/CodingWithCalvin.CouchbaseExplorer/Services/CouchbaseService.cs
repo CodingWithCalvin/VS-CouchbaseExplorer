@@ -11,44 +11,13 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
     public class ClusterConnection : IDisposable
     {
         public ICluster Cluster { get; }
-        public bool HasQueryService { get; private set; }
-        public bool HasKvService { get; private set; }
-        public List<string> AvailableServices { get; private set; } = new List<string>();
+        public bool HasQueryService { get; private set; } = true;
+        public bool HasKvService { get; private set; } = true;
+        public List<string> AvailableServices { get; private set; } = new List<string> { "KV", "Query" };
 
         public ClusterConnection(ICluster cluster)
         {
             Cluster = cluster;
-        }
-
-        public async Task DetectServicesAsync()
-        {
-            try
-            {
-                await Cluster.WaitUntilReadyAsync(TimeSpan.FromSeconds(10));
-
-                // Try to detect services by attempting operations
-                HasKvService = true; // KV is always available if connected
-
-                // Check for query service by trying to get buckets (uses management API)
-                try
-                {
-                    await Cluster.Buckets.GetAllBucketsAsync();
-                    HasQueryService = true;
-                    AvailableServices.Add("Query");
-                }
-                catch
-                {
-                    HasQueryService = false;
-                }
-
-                AvailableServices.Add("KV");
-            }
-            catch (Exception)
-            {
-                // Service detection failed, assume basic services
-                HasKvService = true;
-                AvailableServices.Add("KV");
-            }
         }
 
         public void Dispose()
@@ -95,9 +64,9 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
             {
                 UserName = username,
                 Password = password,
-                KvTimeout = TimeSpan.FromSeconds(30),
-                ManagementTimeout = TimeSpan.FromSeconds(30),
-                QueryTimeout = TimeSpan.FromSeconds(30)
+                KvTimeout = TimeSpan.FromSeconds(10),
+                ManagementTimeout = TimeSpan.FromSeconds(10),
+                QueryTimeout = TimeSpan.FromSeconds(10)
             };
 
             // Check if this is a Capella connection
@@ -131,12 +100,6 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
             }).ConfigureAwait(true);
 
             var connection = new ClusterConnection(cluster);
-
-            await Task.Run(async () =>
-            {
-                await connection.DetectServicesAsync();
-            }).ConfigureAwait(true);
-
             _connections[connectionId] = connection;
             return connection;
         }
