@@ -15,6 +15,15 @@
              Name="CouchbaseExplorerControl">
 
     <UserControl.Resources>
+        <!-- Bool to Visibility Converter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <!-- Inverse Bool to Visibility Converter -->
+        <vm:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+
+        <!-- Count to Visibility Converter (shows when count is 0) -->
+        <vm:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+
         <!-- TreeView Item Style for proper selection binding -->
         <Style TargetType="TreeViewItem">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -166,15 +175,6 @@
                            Foreground="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}" />
             </StackPanel>
         </DataTemplate>
-
-        <!-- Bool to Visibility Converter -->
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
-        <!-- Inverse Bool to Visibility Converter -->
-        <vm:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
-
-        <!-- Count to Visibility Converter (shows when count is 0) -->
-        <vm:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid>

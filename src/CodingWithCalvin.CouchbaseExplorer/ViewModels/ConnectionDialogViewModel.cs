@@ -365,20 +365,48 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
 
             try
             {
-                // TODO: Implement actual Couchbase connection test
-                // For now, simulate a connection test
-                await Task.Delay(1000);
+                // Use a temporary ID for testing
+                var testConnectionId = $"test_{Guid.NewGuid()}";
 
-                // Placeholder: In real implementation, use Couchbase SDK to test connection
-                // var cluster = await Cluster.ConnectAsync(connectionString, options);
-                // await cluster.WaitUntilReadyAsync(TimeSpan.FromSeconds(10));
+                // Use the same connection logic as the actual service
+                var connection = await Services.CouchbaseService.ConnectAsync(
+                    testConnectionId,
+                    Host,
+                    Username,
+                    Password,
+                    UseSsl);
+
+                // Disconnect the test connection
+                await Services.CouchbaseService.DisconnectAsync(testConnectionId);
 
                 TestStatus = TestConnectionStatus.Success;
             }
+            catch (AggregateException ae)
+            {
+                var innermost = ae.GetBaseException();
+                _testErrorMessage = "See details";
+                TestStatus = TestConnectionStatus.Failed;
+                System.Windows.MessageBox.Show(
+                    $"{innermost.GetType().Name}: {innermost.Message}",
+                    "Connection Failed",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
+            }
             catch (Exception ex)
             {
-                _testErrorMessage = ex.Message;
+                // Get the innermost exception for the real error
+                var innermost = ex;
+                while (innermost.InnerException != null)
+                {
+                    innermost = innermost.InnerException;
+                }
+                _testErrorMessage = "See details";
                 TestStatus = TestConnectionStatus.Failed;
+                System.Windows.MessageBox.Show(
+                    $"{ex.GetType().Name}: {innermost.Message}",
+                    "Connection Failed",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error);
             }
         }
 
