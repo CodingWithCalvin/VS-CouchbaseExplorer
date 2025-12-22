@@ -1,4 +1,7 @@
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using CodingWithCalvin.CouchbaseExplorer.ViewModels;
 
 namespace CodingWithCalvin.CouchbaseExplorer
@@ -15,14 +18,39 @@ namespace CodingWithCalvin.CouchbaseExplorer
             InitializeComponent();
 
             ExplorerTreeView.SelectedItemChanged += OnSelectedItemChanged;
+            ExplorerTreeView.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
         }
 
-        private void OnSelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
+        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (e.NewValue is TreeNodeBase node)
             {
                 ViewModel.SelectedNode = node;
             }
+        }
+
+        private void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var treeViewItem = FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
+            if (treeViewItem != null)
+            {
+                treeViewItem.Focus();
+                treeViewItem.IsSelected = true;
+                e.Handled = true;
+            }
+        }
+
+        private static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            while (current != null)
+            {
+                if (current is T result)
+                {
+                    return result;
+                }
+                current = VisualTreeHelper.GetParent(current);
+            }
+            return null;
         }
     }
 }
