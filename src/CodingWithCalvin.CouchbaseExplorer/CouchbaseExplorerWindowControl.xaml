@@ -24,6 +24,9 @@
         <!-- Count to Visibility Converter (shows when count is 0) -->
         <vm:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
 
+        <!-- Binding Proxy to access ViewModel from ContextMenus (which exist outside the visual tree) -->
+        <vm:BindingProxy x:Key="ViewModelProxy" Data="{Binding}" />
+
         <!-- TreeView Item Style for proper selection binding -->
         <Style TargetType="TreeViewItem">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -248,13 +251,13 @@
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <MenuItem Header="Connect" Command="{Binding DataContext.ConnectCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
-                                        <MenuItem Header="Disconnect" Command="{Binding DataContext.DisconnectCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Connect" Command="{Binding Data.ConnectCommand, Source={StaticResource ViewModelProxy}}" />
+                                        <MenuItem Header="Disconnect" Command="{Binding Data.DisconnectCommand, Source={StaticResource ViewModelProxy}}" />
                                         <Separator />
-                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Refresh" Command="{Binding Data.RefreshCommand, Source={StaticResource ViewModelProxy}}" />
                                         <Separator />
-                                        <MenuItem Header="Edit Connection..." Command="{Binding DataContext.EditConnectionCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
-                                        <MenuItem Header="Delete Connection" Command="{Binding DataContext.DeleteConnectionCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Edit Connection..." Command="{Binding Data.EditConnectionCommand, Source={StaticResource ViewModelProxy}}" />
+                                        <MenuItem Header="Delete Connection" Command="{Binding Data.DeleteConnectionCommand, Source={StaticResource ViewModelProxy}}" />
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>
@@ -263,7 +266,7 @@
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Refresh" Command="{Binding Data.RefreshCommand, Source={StaticResource ViewModelProxy}}" />
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>
@@ -272,7 +275,7 @@
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Refresh" Command="{Binding Data.RefreshCommand, Source={StaticResource ViewModelProxy}}" />
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>
@@ -281,9 +284,9 @@
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <MenuItem Header="New Document..." Command="{Binding DataContext.NewDocumentCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="New Document..." Command="{Binding Data.NewDocumentCommand, Source={StaticResource ViewModelProxy}}" />
                                         <Separator />
-                                        <MenuItem Header="Refresh" Command="{Binding DataContext.RefreshCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Refresh" Command="{Binding Data.RefreshCommand, Source={StaticResource ViewModelProxy}}" />
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>
@@ -292,11 +295,11 @@
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <MenuItem Header="Open" Command="{Binding DataContext.OpenDocumentCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Open" Command="{Binding Data.OpenDocumentCommand, Source={StaticResource ViewModelProxy}}" />
                                         <Separator />
-                                        <MenuItem Header="Copy Document ID" Command="{Binding DataContext.CopyDocumentIdCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Copy Document ID" Command="{Binding Data.CopyDocumentIdCommand, Source={StaticResource ViewModelProxy}}" />
                                         <Separator />
-                                        <MenuItem Header="Delete" Command="{Binding DataContext.DeleteDocumentCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                                        <MenuItem Header="Delete" Command="{Binding Data.DeleteDocumentCommand, Source={StaticResource ViewModelProxy}}" />
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>

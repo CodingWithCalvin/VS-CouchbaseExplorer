@@ -79,6 +79,7 @@
     <Compile Include="Services\ConnectionSettingsService.cs" />
     <Compile Include="Services\CouchbaseService.cs" />
     <Compile Include="Services\CredentialManagerService.cs" />
+    <Compile Include="ViewModels\BindingProxy.cs" />
     <Compile Include="ViewModels\BucketNode.cs" />
     <Compile Include="ViewModels\BucketsFolderNode.cs" />
     <Compile Include="ViewModels\CollectionNode.cs" />

@@ -336,35 +336,46 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
             }
         }
 
-        private void OnDeleteConnection(object parameter)
+        private async void OnDeleteConnection(object parameter)
         {
-            if (SelectedNode is ConnectionNode connection)
+            var connection = parameter as ConnectionNode ?? SelectedNode as ConnectionNode;
+            if (connection == null)
             {
-                var result = MessageBox.Show(
-                    $"Are you sure you want to delete the connection '{connection.Name}'?",
-                    "Delete Connection",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                return;
+            }
 
-                if (result == MessageBoxResult.Yes)
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete the connection '{connection.Name}'?",
+                "Delete Connection",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                // Disconnect first if connected
+                if (connection.IsConnected)
                 {
-                    // Disconnect first if connected
-                    if (connection.IsConnected)
-                    {
-                        // TODO: Disconnect from cluster
-                        connection.IsConnected = false;
-                    }
-
-                    _settingsService.DeleteConnection(connection.Id);
-
-                    Connections.Remove(connection);
+                    await CouchbaseService.DisconnectAsync(connection.Id);
+                    connection.IsConnected = false;
                 }
+
+                // Unsubscribe from events
+                connection.ConnectRequested -= OnConnectRequested;
+
+                // Delete saved password
+                CredentialManagerService.DeletePassword(connection.Id);
+
+                // Delete from settings
+                _settingsService.DeleteConnection(connection.Id);
+
+                // Remove from UI
+                Connections.Remove(connection);
             }
         }
 
         private bool IsConnectionSelected(object parameter)
         {
-            return SelectedNode is ConnectionNode;
+            return parameter is ConnectionNode || SelectedNode is ConnectionNode;
         }
 
         private void OnNewDocument(object parameter)
