@@ -169,13 +169,16 @@ namespace CodingWithCalvin.CouchbaseExplorer.ViewModels
                 case ScopeNode scope:
                     await scope.RefreshAsync();
                     break;
+                case CollectionNode collection:
+                    await collection.RefreshAsync();
+                    break;
             }
         }
 
         private bool CanRefresh(object parameter)
         {
             var node = parameter as TreeNodeBase ?? SelectedNode;
-            return node is ConnectionNode conn ? conn.IsConnected : node is BucketNode || node is ScopeNode;
+            return node is ConnectionNode conn ? conn.IsConnected : node is BucketNode || node is ScopeNode || node is CollectionNode;
         }
 
         private void OnCollapseAll(object parameter)

@@ -87,6 +87,7 @@
     <Compile Include="ViewModels\ConnectionDialogViewModel.cs" />
     <Compile Include="ViewModels\Converters.cs" />
     <Compile Include="ViewModels\CouchbaseExplorerViewModel.cs" />
+    <Compile Include="ViewModels\DocumentBatchNode.cs" />
     <Compile Include="ViewModels\DocumentNode.cs" />
     <Compile Include="ViewModels\IndexesFolderNode.cs" />
     <Compile Include="ViewModels\IndexNode.cs" />
