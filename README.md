@@ -120,6 +120,11 @@ Contributions are welcome! Whether it's bug reports, feature requests, or pull r
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Contributors
+
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
+
 ## Disclaimer
 
 This extension is an independent, community-driven project and is **not affiliated with, endorsed by, or sponsored by Couchbase, Inc.** Couchbase and Capella are trademarks of Couchbase, Inc.
