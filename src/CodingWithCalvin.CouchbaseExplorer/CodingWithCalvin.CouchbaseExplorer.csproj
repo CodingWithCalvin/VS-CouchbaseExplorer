@@ -9,11 +9,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DeployExtension>True</DeployExtension>
-  </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="CodingWithCalvin.Otel4Vsix" Version="0.2.2" />
     <PackageReference Include="CouchbaseNetClient" Version="3.8.1" />
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
   </ItemGroup>

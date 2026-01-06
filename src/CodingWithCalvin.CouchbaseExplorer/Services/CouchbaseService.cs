@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CodingWithCalvin.Otel4Vsix;
 using Couchbase;
 using Couchbase.Management.Buckets;
 
@@ -52,64 +53,93 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
         public static async Task<ClusterConnection> ConnectAsync(string connectionId, string connectionString, string username, string password, bool useSsl)
         {
-            // Enable TLS 1.2/1.3 explicitly for .NET Framework
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.ConnectAsync");
 
-            if (_connections.TryGetValue(connectionId, out var existing))
+            try
             {
-                return existing;
+                activity?.SetTag("connection.id", connectionId);
+                activity?.SetTag("connection.isCapella", connectionString.Contains(".cloud.couchbase.com"));
+
+                // Enable TLS 1.2/1.3 explicitly for .NET Framework
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+                if (_connections.TryGetValue(connectionId, out var existing))
+                {
+                    VsixTelemetry.LogInformation("Reusing existing connection {ConnectionId}", connectionId);
+                    return existing;
+                }
+
+                var options = new ClusterOptions
+                {
+                    UserName = username,
+                    Password = password,
+                    KvTimeout = TimeSpan.FromSeconds(10),
+                    ManagementTimeout = TimeSpan.FromSeconds(10),
+                    QueryTimeout = TimeSpan.FromSeconds(10)
+                };
+
+                // Check if this is a Capella connection
+                var isCapella = connectionString.Contains(".cloud.couchbase.com");
+
+                if (useSsl || isCapella)
+                {
+                    options.EnableTls = true;
+                }
+
+                // Capella-specific configuration
+                if (isCapella)
+                {
+                    options.EnableDnsSrvResolution = true;
+                    options.KvIgnoreRemoteCertificateNameMismatch = true;
+                    options.HttpIgnoreRemoteCertificateMismatch = true;
+                    options.ForceIPv4 = true;
+                }
+
+                // Build connection string with protocol
+                var fullConnectionString = connectionString;
+                if (!connectionString.StartsWith("couchbase://") && !connectionString.StartsWith("couchbases://"))
+                {
+                    fullConnectionString = useSsl ? $"couchbases://{connectionString}" : $"couchbase://{connectionString}";
+                }
+
+                VsixTelemetry.LogInformation("Connecting to Couchbase cluster {ConnectionId}", connectionId);
+
+                // Connect on background thread to avoid UI blocking
+                var cluster = await Task.Run(async () =>
+                {
+                    return await Cluster.ConnectAsync(fullConnectionString, options);
+                }).ConfigureAwait(true);
+
+                var connection = new ClusterConnection(cluster);
+                _connections[connectionId] = connection;
+
+                VsixTelemetry.LogInformation("Successfully connected to Couchbase cluster {ConnectionId}", connectionId);
+
+                return connection;
             }
-
-            var options = new ClusterOptions
+            catch (Exception ex)
             {
-                UserName = username,
-                Password = password,
-                KvTimeout = TimeSpan.FromSeconds(10),
-                ManagementTimeout = TimeSpan.FromSeconds(10),
-                QueryTimeout = TimeSpan.FromSeconds(10)
-            };
-
-            // Check if this is a Capella connection
-            var isCapella = connectionString.Contains(".cloud.couchbase.com");
-
-            if (useSsl || isCapella)
-            {
-                options.EnableTls = true;
+                activity?.RecordError(ex);
+                VsixTelemetry.TrackException(ex, new Dictionary<string, object>
+                {
+                    { "operation.name", "ConnectAsync" },
+                    { "connection.id", connectionId }
+                });
+                throw;
             }
-
-            // Capella-specific configuration
-            if (isCapella)
-            {
-                options.EnableDnsSrvResolution = true;
-                options.KvIgnoreRemoteCertificateNameMismatch = true;
-                options.HttpIgnoreRemoteCertificateMismatch = true;
-                options.ForceIPv4 = true;
-            }
-
-            // Build connection string with protocol
-            var fullConnectionString = connectionString;
-            if (!connectionString.StartsWith("couchbase://") && !connectionString.StartsWith("couchbases://"))
-            {
-                fullConnectionString = useSsl ? $"couchbases://{connectionString}" : $"couchbase://{connectionString}";
-            }
-
-            // Connect on background thread to avoid UI blocking
-            var cluster = await Task.Run(async () =>
-            {
-                return await Cluster.ConnectAsync(fullConnectionString, options);
-            }).ConfigureAwait(true);
-
-            var connection = new ClusterConnection(cluster);
-            _connections[connectionId] = connection;
-            return connection;
         }
 
         public static async Task DisconnectAsync(string connectionId)
         {
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.DisconnectAsync");
+
+            activity?.SetTag("connection.id", connectionId);
+
             if (_connections.TryGetValue(connectionId, out var connection))
             {
                 _connections.Remove(connectionId);
                 connection.Dispose();
+                VsixTelemetry.LogInformation("Disconnected from Couchbase cluster {ConnectionId}", connectionId);
             }
         }
 
@@ -121,43 +151,87 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
         public static async Task<List<BucketInfo>> GetBucketsAsync(string connectionId)
         {
-            var connection = GetConnection(connectionId);
-            if (connection == null)
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.GetBucketsAsync");
+
+            try
             {
-                throw new InvalidOperationException("Not connected to cluster");
+                activity?.SetTag("connection.id", connectionId);
+
+                var connection = GetConnection(connectionId);
+                if (connection == null)
+                {
+                    throw new InvalidOperationException("Not connected to cluster");
+                }
+
+                var buckets = await connection.Cluster.Buckets.GetAllBucketsAsync();
+
+                var result = buckets.Values.Select(b => new BucketInfo
+                {
+                    Name = b.Name,
+                    BucketType = b.BucketType,
+                    RamQuotaMB = (long)(b.RamQuotaMB),
+                    NumReplicas = b.NumReplicas
+                }).OrderBy(b => b.Name).ToList();
+
+                activity?.SetTag("buckets.count", result.Count);
+
+                return result;
             }
-
-            var buckets = await connection.Cluster.Buckets.GetAllBucketsAsync();
-
-            return buckets.Values.Select(b => new BucketInfo
+            catch (Exception ex)
             {
-                Name = b.Name,
-                BucketType = b.BucketType,
-                RamQuotaMB = (long)(b.RamQuotaMB),
-                NumReplicas = b.NumReplicas
-            }).OrderBy(b => b.Name).ToList();
+                activity?.RecordError(ex);
+                VsixTelemetry.TrackException(ex, new Dictionary<string, object>
+                {
+                    { "operation.name", "GetBucketsAsync" },
+                    { "connection.id", connectionId }
+                });
+                throw;
+            }
         }
 
         public static async Task<List<ScopeInfo>> GetScopesAsync(string connectionId, string bucketName)
         {
-            var connection = GetConnection(connectionId);
-            if (connection == null)
-            {
-                throw new InvalidOperationException("Not connected to cluster");
-            }
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.GetScopesAsync");
 
-            var bucket = await connection.Cluster.BucketAsync(bucketName);
-            var scopes = await bucket.Collections.GetAllScopesAsync();
-
-            return scopes.Select(s => new ScopeInfo
+            try
             {
-                Name = s.Name,
-                Collections = s.Collections.Select(c => new CollectionInfo
+                activity?.SetTag("connection.id", connectionId);
+                activity?.SetTag("bucket.name", bucketName);
+
+                var connection = GetConnection(connectionId);
+                if (connection == null)
                 {
-                    Name = c.Name,
-                    ScopeName = s.Name
-                }).OrderBy(c => c.Name).ToList()
-            }).OrderBy(s => s.Name).ToList();
+                    throw new InvalidOperationException("Not connected to cluster");
+                }
+
+                var bucket = await connection.Cluster.BucketAsync(bucketName);
+                var scopes = await bucket.Collections.GetAllScopesAsync();
+
+                var result = scopes.Select(s => new ScopeInfo
+                {
+                    Name = s.Name,
+                    Collections = s.Collections.Select(c => new CollectionInfo
+                    {
+                        Name = c.Name,
+                        ScopeName = s.Name
+                    }).OrderBy(c => c.Name).ToList()
+                }).OrderBy(s => s.Name).ToList();
+
+                activity?.SetTag("scopes.count", result.Count);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                activity?.RecordError(ex);
+                VsixTelemetry.TrackException(ex, new Dictionary<string, object>
+                {
+                    { "operation.name", "GetScopesAsync" },
+                    { "connection.id", connectionId },
+                    { "bucket.name", bucketName }
+                });
+                throw;
+            }
         }
 
         public static async Task<List<CollectionInfo>> GetCollectionsAsync(string connectionId, string bucketName, string scopeName)
@@ -169,56 +243,106 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
         public static async Task<DocumentQueryResult> GetDocumentIdsAsync(string connectionId, string bucketName, string scopeName, string collectionName, int limit = 50, int offset = 0)
         {
-            var connection = GetConnection(connectionId);
-            if (connection == null)
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.GetDocumentIdsAsync");
+
+            try
             {
-                throw new InvalidOperationException("Not connected to cluster");
+                activity?.SetTag("connection.id", connectionId);
+                activity?.SetTag("bucket.name", bucketName);
+                activity?.SetTag("scope.name", scopeName);
+                activity?.SetTag("collection.name", collectionName);
+
+                var connection = GetConnection(connectionId);
+                if (connection == null)
+                {
+                    throw new InvalidOperationException("Not connected to cluster");
+                }
+
+                var query = $"SELECT META().id FROM `{bucketName}`.`{scopeName}`.`{collectionName}` ORDER BY META().id LIMIT {limit + 1} OFFSET {offset}";
+
+                var result = await connection.Cluster.QueryAsync<DocumentIdResult>(query);
+                var documentIds = new List<string>();
+
+                await foreach (var row in result.Rows)
+                {
+                    documentIds.Add(row.Id);
+                }
+
+                // Check if there are more documents (we fetched limit+1 to check)
+                var hasMore = documentIds.Count > limit;
+                if (hasMore)
+                {
+                    documentIds.RemoveAt(documentIds.Count - 1);
+                }
+
+                activity?.SetTag("documents.count", documentIds.Count);
+                activity?.SetTag("documents.hasMore", hasMore);
+
+                return new DocumentQueryResult
+                {
+                    DocumentIds = documentIds,
+                    HasMore = hasMore
+                };
             }
-
-            var query = $"SELECT META().id FROM `{bucketName}`.`{scopeName}`.`{collectionName}` ORDER BY META().id LIMIT {limit + 1} OFFSET {offset}";
-
-            var result = await connection.Cluster.QueryAsync<DocumentIdResult>(query);
-            var documentIds = new List<string>();
-
-            await foreach (var row in result.Rows)
+            catch (Exception ex)
             {
-                documentIds.Add(row.Id);
+                activity?.RecordError(ex);
+                VsixTelemetry.TrackException(ex, new Dictionary<string, object>
+                {
+                    { "operation.name", "GetDocumentIdsAsync" },
+                    { "connection.id", connectionId },
+                    { "bucket.name", bucketName },
+                    { "scope.name", scopeName },
+                    { "collection.name", collectionName }
+                });
+                throw;
             }
-
-            // Check if there are more documents (we fetched limit+1 to check)
-            var hasMore = documentIds.Count > limit;
-            if (hasMore)
-            {
-                documentIds.RemoveAt(documentIds.Count - 1);
-            }
-
-            return new DocumentQueryResult
-            {
-                DocumentIds = documentIds,
-                HasMore = hasMore
-            };
         }
 
         public static async Task<DocumentContent> GetDocumentAsync(string connectionId, string bucketName, string scopeName, string collectionName, string documentId)
         {
-            var connection = GetConnection(connectionId);
-            if (connection == null)
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.GetDocumentAsync");
+
+            try
             {
-                throw new InvalidOperationException("Not connected to cluster");
+                activity?.SetTag("connection.id", connectionId);
+                activity?.SetTag("bucket.name", bucketName);
+                activity?.SetTag("scope.name", scopeName);
+                activity?.SetTag("collection.name", collectionName);
+                activity?.SetTag("document.id", documentId);
+
+                var connection = GetConnection(connectionId);
+                if (connection == null)
+                {
+                    throw new InvalidOperationException("Not connected to cluster");
+                }
+
+                var bucket = await connection.Cluster.BucketAsync(bucketName);
+                var scope = bucket.Scope(scopeName);
+                var collection = scope.Collection(collectionName);
+
+                var result = await collection.GetAsync(documentId);
+
+                VsixTelemetry.LogInformation("Retrieved document {DocumentId}", documentId);
+
+                return new DocumentContent
+                {
+                    Id = documentId,
+                    Content = result.ContentAs<object>(),
+                    Cas = result.Cas
+                };
             }
-
-            var bucket = await connection.Cluster.BucketAsync(bucketName);
-            var scope = bucket.Scope(scopeName);
-            var collection = scope.Collection(collectionName);
-
-            var result = await collection.GetAsync(documentId);
-
-            return new DocumentContent
+            catch (Exception ex)
             {
-                Id = documentId,
-                Content = result.ContentAs<object>(),
-                Cas = result.Cas
-            };
+                activity?.RecordError(ex);
+                VsixTelemetry.TrackException(ex, new Dictionary<string, object>
+                {
+                    { "operation.name", "GetDocumentAsync" },
+                    { "connection.id", connectionId },
+                    { "document.id", documentId }
+                });
+                throw;
+            }
         }
     }
 
