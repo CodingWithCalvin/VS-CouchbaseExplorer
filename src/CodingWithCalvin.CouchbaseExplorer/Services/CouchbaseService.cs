@@ -57,15 +57,14 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
             try
             {
-                activity?.SetTag("connection.id", connectionId);
-                activity?.SetTag("connection.isCapella", connectionString.Contains(".cloud.couchbase.com"));
+                                activity?.SetTag("connection.isCapella", connectionString.Contains(".cloud.couchbase.com"));
 
                 // Enable TLS 1.2/1.3 explicitly for .NET Framework
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
                 if (_connections.TryGetValue(connectionId, out var existing))
                 {
-                    VsixTelemetry.LogInformation("Reusing existing connection {ConnectionId}", connectionId);
+                    VsixTelemetry.LogInformation("Reusing existing connection");
                     return existing;
                 }
 
@@ -102,7 +101,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
                     fullConnectionString = useSsl ? $"couchbases://{connectionString}" : $"couchbase://{connectionString}";
                 }
 
-                VsixTelemetry.LogInformation("Connecting to Couchbase cluster {ConnectionId}", connectionId);
+                VsixTelemetry.LogInformation("Connecting to Couchbase cluster");
 
                 // Connect on background thread to avoid UI blocking
                 var cluster = await Task.Run(async () =>
@@ -113,7 +112,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
                 var connection = new ClusterConnection(cluster);
                 _connections[connectionId] = connection;
 
-                VsixTelemetry.LogInformation("Successfully connected to Couchbase cluster {ConnectionId}", connectionId);
+                VsixTelemetry.LogInformation("Successfully connected to Couchbase cluster");
 
                 return connection;
             }
@@ -133,13 +132,11 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
         {
             using var activity = VsixTelemetry.StartCommandActivity("CouchbaseService.DisconnectAsync");
 
-            activity?.SetTag("connection.id", connectionId);
-
-            if (_connections.TryGetValue(connectionId, out var connection))
+                        if (_connections.TryGetValue(connectionId, out var connection))
             {
                 _connections.Remove(connectionId);
                 connection.Dispose();
-                VsixTelemetry.LogInformation("Disconnected from Couchbase cluster {ConnectionId}", connectionId);
+                VsixTelemetry.LogInformation("Disconnected from Couchbase cluster");
             }
         }
 
@@ -155,9 +152,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
             try
             {
-                activity?.SetTag("connection.id", connectionId);
-
-                var connection = GetConnection(connectionId);
+                                var connection = GetConnection(connectionId);
                 if (connection == null)
                 {
                     throw new InvalidOperationException("Not connected to cluster");
@@ -195,10 +190,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
             try
             {
-                activity?.SetTag("connection.id", connectionId);
-                activity?.SetTag("bucket.name", bucketName);
-
-                var connection = GetConnection(connectionId);
+                                                var connection = GetConnection(connectionId);
                 if (connection == null)
                 {
                     throw new InvalidOperationException("Not connected to cluster");
@@ -247,12 +239,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
             try
             {
-                activity?.SetTag("connection.id", connectionId);
-                activity?.SetTag("bucket.name", bucketName);
-                activity?.SetTag("scope.name", scopeName);
-                activity?.SetTag("collection.name", collectionName);
-
-                var connection = GetConnection(connectionId);
+                                                                                var connection = GetConnection(connectionId);
                 if (connection == null)
                 {
                     throw new InvalidOperationException("Not connected to cluster");
@@ -305,13 +292,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
             try
             {
-                activity?.SetTag("connection.id", connectionId);
-                activity?.SetTag("bucket.name", bucketName);
-                activity?.SetTag("scope.name", scopeName);
-                activity?.SetTag("collection.name", collectionName);
-                activity?.SetTag("document.id", documentId);
-
-                var connection = GetConnection(connectionId);
+                                                                                                var connection = GetConnection(connectionId);
                 if (connection == null)
                 {
                     throw new InvalidOperationException("Not connected to cluster");
@@ -323,7 +304,7 @@ namespace CodingWithCalvin.CouchbaseExplorer.Services
 
                 var result = await collection.GetAsync(documentId);
 
-                VsixTelemetry.LogInformation("Retrieved document {DocumentId}", documentId);
+                VsixTelemetry.LogInformation("Retrieved document");
 
                 return new DocumentContent
                 {
