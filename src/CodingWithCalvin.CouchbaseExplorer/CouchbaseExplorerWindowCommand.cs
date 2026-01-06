@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
+using CodingWithCalvin.Otel4Vsix;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -44,14 +46,30 @@ namespace CodingWithCalvin.CouchbaseExplorer
 
         private void ShowToolWindow(object sender, EventArgs e)
         {
-            var window = this._package.FindToolWindow(typeof(CouchbaseExplorerWindow), 0, true);
-            if (window?.Frame == null)
-            {
-                throw new NotSupportedException("Cannot create tool window");
-            }
+            using var activity = VsixTelemetry.StartCommandActivity("CouchbaseExplorer.ShowToolWindow");
 
-            var windowFrame = (IVsWindowFrame)window.Frame;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+            try
+            {
+                var window = this._package.FindToolWindow(typeof(CouchbaseExplorerWindow), 0, true);
+                if (window?.Frame == null)
+                {
+                    throw new NotSupportedException("Cannot create tool window");
+                }
+
+                var windowFrame = (IVsWindowFrame)window.Frame;
+                Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+
+                VsixTelemetry.LogInformation("Couchbase Explorer tool window shown");
+            }
+            catch (Exception ex)
+            {
+                activity?.RecordError(ex);
+                VsixTelemetry.TrackException(ex, new Dictionary<string, object>
+                {
+                    { "operation.name", "ShowToolWindow" }
+                });
+                throw;
+            }
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using CodingWithCalvin.CouchbaseExplorer.Editors;
+using CodingWithCalvin.Otel4Vsix;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -32,6 +33,20 @@ namespace CodingWithCalvin.CouchbaseExplorer
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
 
+            var builder = VsixTelemetry.Configure()
+                .WithServiceName(VsixInfo.DisplayName)
+                .WithServiceVersion(VsixInfo.Version)
+                .WithVisualStudioAttributes(this)
+                .WithEnvironmentAttributes();
+
+#if !DEBUG
+            builder
+                .WithOtlpHttp("https://api.honeycomb.io")
+                .WithHeader("x-honeycomb-team", HoneycombConfig.ApiKey);
+#endif
+
+            builder.Initialize();
+
             // Register the editor factory
             _editorFactory = new DocumentEditorFactory();
             RegisterEditorFactory(_editorFactory);
@@ -43,6 +58,7 @@ namespace CodingWithCalvin.CouchbaseExplorer
         {
             if (disposing)
             {
+                VsixTelemetry.Shutdown();
                 _editorFactory?.Dispose();
             }
             base.Dispose(disposing);
