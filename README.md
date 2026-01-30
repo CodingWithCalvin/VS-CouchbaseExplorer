@@ -36,28 +36,28 @@
 
 > **Note:** This extension is currently in **BETA / PREVIEW**. We're actively developing new features and would love your feedback!
 
-## Features
+## ✨ Features
 
 Couchbase Explorer brings powerful database management capabilities directly into your Visual Studio workflow:
 
-### Connection Management
-- **Multiple Connections** - Save and manage connections to multiple Couchbase Server instances
-- **Secure Credential Storage** - Passwords are securely stored using Windows Credential Manager
-- **SSL/TLS Support** - Connect securely to your clusters with SSL encryption
-- **Connection Testing** - Verify your connection settings before saving
+### 🔌 Connection Management
+- 🔗 **Multiple Connections** - Save and manage connections to multiple Couchbase Server instances
+- 🔐 **Secure Credential Storage** - Passwords are securely stored using Windows Credential Manager
+- 🔒 **SSL/TLS Support** - Connect securely to your clusters with SSL encryption
+- ✅ **Connection Testing** - Verify your connection settings before saving
 
-### Data Browsing
-- **Hierarchical Tree View** - Navigate your cluster structure: Buckets → Scopes → Collections → Documents
-- **Lazy Loading** - Efficient loading of large datasets with batched document retrieval
-- **Document Viewer** - View document contents in a formatted JSON editor with syntax highlighting
-- **Refresh Support** - Refresh any level of the tree to see the latest data
+### 🌳 Data Browsing
+- 📂 **Hierarchical Tree View** - Navigate your cluster structure: Buckets → Scopes → Collections → Documents
+- ⚡ **Lazy Loading** - Efficient loading of large datasets with batched document retrieval
+- 📄 **Document Viewer** - View document contents in a formatted JSON editor with syntax highlighting
+- 🔄 **Refresh Support** - Refresh any level of the tree to see the latest data
 
-### Document Operations
-- **View Documents** - Double-click or right-click to open documents in a dedicated editor tab
-- **Copy JSON** - Quickly copy document contents to clipboard
-- **Copy Document ID** - Copy document IDs for use in your code
+### 📝 Document Operations
+- 👁️ **View Documents** - Double-click or right-click to open documents in a dedicated editor tab
+- 📋 **Copy JSON** - Quickly copy document contents to clipboard
+- 🆔 **Copy Document ID** - Copy document IDs for use in your code
 
-## Installation
+## 🛠️ Installation
 
 ### Visual Studio Marketplace
 
@@ -70,14 +70,14 @@ Couchbase Explorer brings powerful database management capabilities directly int
 
 Download the latest `.vsix` from the [Releases](https://github.com/CodingWithCalvin/VS-CouchbaseExplorer/releases) page and double-click to install.
 
-## Usage
+## 🚀 Usage
 
-### Opening Couchbase Explorer
+### 📂 Opening Couchbase Explorer
 
 1. Go to **View > Couchbase Explorer**
 2. The tool window will appear (by default, docked near Server Explorer)
 
-### Adding a Connection
+### ➕ Adding a Connection
 
 1. Click the **Add Connection** button in the toolbar
 2. Enter a friendly name for your connection
@@ -87,18 +87,18 @@ Download the latest `.vsix` from the [Releases](https://github.com/CodingWithCal
 6. Click **Test Connection** to verify
 7. Click **Save**
 
-### Browsing Data
+### 🔍 Browsing Data
 
 1. Right-click your connection and select **Connect**
 2. Expand the tree to browse: **Buckets > Scopes > Collections > Documents**
 3. Double-click any document to view its contents
 
-## Requirements
+## 📋 Requirements
 
-- **Visual Studio 2022** or **Visual Studio 2026** (x64 and ARM64 supported)
-- **Couchbase Server** 7.0+ or **Couchbase Capella** (Capella support coming soon)
+- 💻 **Visual Studio 2022** or **Visual Studio 2026** (x64 and ARM64 supported)
+- 🗄️ **Couchbase Server** 7.0+ or **Couchbase Capella** (Capella support coming soon)
 
-## Roadmap
+## 🗺️ Roadmap
 
 We're actively working on new features! Here's what's coming:
 
@@ -111,28 +111,28 @@ We're actively working on new features! Here's what's coming:
 
 Have a feature request? [Open an issue](https://github.com/CodingWithCalvin/VS-CouchbaseExplorer/issues/new)!
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Whether it's bug reports, feature requests, or pull requests - all feedback helps make this extension better.
 
-### Development Setup
+### 🔧 Development Setup
 
 1. Clone the repository
 2. Open the solution in Visual Studio 2022 or 2026
 3. Ensure you have the "Visual Studio extension development" workload installed
 4. Press F5 to launch the experimental instance
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Disclaimer
+## ⚠️ Disclaimer
 
 This extension is an independent, community-driven project and is **not affiliated with, endorsed by, or sponsored by Couchbase, Inc.** Couchbase and Capella are trademarks of Couchbase, Inc.
 
 ---
 
-## Contributors
+## 👥 Contributors
 
 <!-- readme: contributors -start -->
 <!-- readme: contributors -end -->
