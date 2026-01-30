@@ -1,7 +1,7 @@
 # Couchbase Explorer for Visual Studio
 
 <p align="center">
-  <img src="resources/logo.png" alt="Couchbase Explorer Logo" width="128" />
+  <img src="https://raw.githubusercontent.com/CodingWithCalvin/VS-CouchbaseExplorer/main/resources/logo.png" alt="Couchbase Explorer Logo" width="128" />
 </p>
 
 <p align="center">
