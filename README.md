@@ -1,26 +1,35 @@
-# Couchbase Explorer for Visual Studio
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/CodingWithCalvin/VS-CouchbaseExplorer/main/resources/logo.png" alt="Couchbase Explorer Logo" width="128" />
+  <img src="https://raw.githubusercontent.com/CodingWithCalvin/VS-CouchbaseExplorer/main/resources/logo.png" alt="Couchbase Explorer Logo" width="128" height="128">
 </p>
+
+<h1 align="center">Couchbase Explorer</h1>
 
 <p align="center">
   <strong>Browse, explore, and manage your Couchbase data directly from Visual Studio</strong>
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#roadmap">Roadmap</a> •
-  <a href="#contributing">Contributing</a>
+  <a href="https://github.com/CodingWithCalvin/VS-CouchbaseExplorer/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/CodingWithCalvin/VS-CouchbaseExplorer?style=for-the-badge" alt="License">
+  </a>
+  <a href="https://github.com/CodingWithCalvin/VS-CouchbaseExplorer/actions/workflows/build.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/CodingWithCalvin/VS-CouchbaseExplorer/build.yml?style=for-the-badge" alt="Build Status">
+  </a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/visual-studio-marketplace/v/codingwithcalvin.VS-CouchbaseExplorer?style=for-the-badge" alt="Marketplace Version" />
-  <img src="https://img.shields.io/visual-studio-marketplace/i/codingwithcalvin.VS-CouchbaseExplorer?style=for-the-badge" alt="Marketplace Installations" />
-  <img src="https://img.shields.io/github/license/CodingWithCalvin/VS-CouchbaseExplorer?style=for-the-badge" alt="License" />
-  <img src="https://img.shields.io/github/actions/workflow/status/CodingWithCalvin/VS-CouchbaseExplorer/release_build_and_deploy.yml?style=for-the-badge" alt="Build Status" />
+  <a href="https://marketplace.visualstudio.com/items?itemName=CodingWithCalvin.VS-CouchbaseExplorer">
+    <img src="https://img.shields.io/visual-studio-marketplace/v/CodingWithCalvin.VS-CouchbaseExplorer?style=for-the-badge" alt="Marketplace Version">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=CodingWithCalvin.VS-CouchbaseExplorer">
+    <img src="https://img.shields.io/visual-studio-marketplace/i/CodingWithCalvin.VS-CouchbaseExplorer?style=for-the-badge" alt="Marketplace Installations">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=CodingWithCalvin.VS-CouchbaseExplorer">
+    <img src="https://img.shields.io/visual-studio-marketplace/d/CodingWithCalvin.VS-CouchbaseExplorer?style=for-the-badge" alt="Marketplace Downloads">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=CodingWithCalvin.VS-CouchbaseExplorer">
+    <img src="https://img.shields.io/visual-studio-marketplace/r/CodingWithCalvin.VS-CouchbaseExplorer?style=for-the-badge" alt="Marketplace Rating">
+  </a>
 </p>
 
 ---
@@ -50,24 +59,22 @@ Couchbase Explorer brings powerful database management capabilities directly int
 
 ## Installation
 
-### From Visual Studio Marketplace
+### Visual Studio Marketplace
 
-1. Open Visual Studio
-2. Go to **Extensions** → **Manage Extensions**
-3. Search for "**Couchbase Explorer**"
+1. Open Visual Studio 2022 or 2026
+2. Go to **Extensions > Manage Extensions**
+3. Search for "Couchbase Explorer"
 4. Click **Download** and restart Visual Studio
 
-### From VSIX File
+### Manual Installation
 
-1. Download the latest `.vsix` file from [GitHub Releases](https://github.com/CodingWithCalvin/VS-CouchbaseExplorer/releases)
-2. Double-click the file to install
-3. Restart Visual Studio
+Download the latest `.vsix` from the [Releases](https://github.com/CodingWithCalvin/VS-CouchbaseExplorer/releases) page and double-click to install.
 
-## Getting Started
+## Usage
 
 ### Opening Couchbase Explorer
 
-1. Go to **View** → **Couchbase Explorer**
+1. Go to **View > Couchbase Explorer**
 2. The tool window will appear (by default, docked near Server Explorer)
 
 ### Adding a Connection
@@ -83,7 +90,7 @@ Couchbase Explorer brings powerful database management capabilities directly int
 ### Browsing Data
 
 1. Right-click your connection and select **Connect**
-2. Expand the tree to browse: **Buckets** → **Scopes** → **Collections** → **Documents**
+2. Expand the tree to browse: **Buckets > Scopes > Collections > Documents**
 3. Double-click any document to view its contents
 
 ## Requirements
@@ -106,29 +113,29 @@ Have a feature request? [Open an issue](https://github.com/CodingWithCalvin/VS-C
 
 ## Contributing
 
-Contributions are welcome! Whether it's bug reports, feature requests, or pull requests - we appreciate all feedback.
+Contributions are welcome! Whether it's bug reports, feature requests, or pull requests - all feedback helps make this extension better.
 
 ### Development Setup
 
 1. Clone the repository
-2. Install [Visual Studio 2022 or 2026](https://visualstudio.microsoft.com/) with the **Visual Studio extension development** workload
-3. Install the [Extensibility Essentials 2022](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.ExtensibilityEssentials2022) extension
-4. Open `src/CodingWithCalvin.CouchbaseExplorer.sln`
-5. Press F5 to launch the experimental instance
+2. Open the solution in Visual Studio 2022 or 2026
+3. Ensure you have the "Visual Studio extension development" workload installed
+4. Press F5 to launch the experimental instance
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contributors
-
-<!-- readme: contributors -start -->
-[![CalvinAllen](https://avatars.githubusercontent.com/u/41448698?v=4&s=64)](https://github.com/CalvinAllen) 
-<!-- readme: contributors -end -->
-
 ## Disclaimer
 
 This extension is an independent, community-driven project and is **not affiliated with, endorsed by, or sponsored by Couchbase, Inc.** Couchbase and Capella are trademarks of Couchbase, Inc.
+
+---
+
+## Contributors
+
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
 
 ---
 
