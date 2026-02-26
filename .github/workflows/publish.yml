@@ -14,6 +14,4 @@ jobs:
       extension-name: CouchbaseExplorer
       display-name: 'Couchbase Explorer'
       marketplace-id: CodingWithCalvin.VS-CouchbaseExplorer
-      description: 'Browse and manage your Couchbase Server data directly from Visual Studio'
-      hashtags: '#couchbase #nosql'
     secrets: inherit
