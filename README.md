@@ -120,7 +120,7 @@ This extension is an independent, community-driven project and is **not affiliat
 ## 👥 Contributors
 
 <!-- readme: contributors -start -->
-<a href="https://github.com/CalvinAllen"><img src="https://avatars.githubusercontent.com/u/41448698?v=4&s=64" width="64" height="64" alt="CalvinAllen"></a> 
+<a href="https://github.com/CalvinAllen"><img src="https://avatars.githubusercontent.com/u/41448698?v=4&s=64" width="64" height="64" align="left" alt="CalvinAllen"></a> <br clear="all">
 <!-- readme: contributors -end -->
 
 ---
